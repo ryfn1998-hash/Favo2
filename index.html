@@ -6,182 +6,147 @@
     <title>Favo 2 AI Beta - FR</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@300;500;700&display=swap');
-        :root { --bg-black: #08080a; --input-bg: #121214; --accent-blue: #00f2ff; --tech-blue: #0072ff; --dark-gray: #1a1a1c; }
+        :root { --bg-black: #08080a; --input-bg: #121214; --accent-blue: #00f2ff; --tech-blue: #0072ff; --error-red: #ff4b2b; }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; background: var(--bg-black); color: #fff; height: 100dvh; font-family: 'Noto Sans TC', sans-serif; overflow: hidden; }
         
         #app { display: flex; flex-direction: column; height: 100dvh; }
         .top-bar { height: 2px; width: 100%; background: linear-gradient(90deg, transparent, var(--tech-blue), var(--accent-blue), transparent); }
-        .header { padding: 12px 0; text-align: center; border-bottom: 1px solid #1a1a1a; background: rgba(8,8,10,0.95); backdrop-filter: blur(10px); z-index: 100; }
+        .header { padding: 12px 0; text-align: center; border-bottom: 1px solid #1a1a1a; background: rgba(8,8,10,0.95); backdrop-filter: blur(10px); }
         .title-main { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; color: var(--accent-blue); letter-spacing: 2px; }
 
-        #welcome-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%; transition: 0.5s; }
-        .welcome-text { font-size: 48px; font-weight: 900; color: #fff; text-shadow: 0 0 25px rgba(0, 242, 255, 0.5); margin-bottom: 10px; }
-        .favo-hl { color: var(--accent-blue); font-family: 'Orbitron'; }
-        .ver-tag { font-family: 'Orbitron'; font-size: 10px; background: var(--tech-blue); padding: 2px 8px; border-radius: 4px; margin-top: 10px; letter-spacing: 1px; }
-
-        .chat-container { flex: 1; overflow-y: auto; padding: 20px 8%; display: none; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
+        /* 聊天容器 */
+        .chat-container { flex: 1; overflow-y: auto; padding: 20px 8%; display: none; flex-direction: column; gap: 20px; }
         #thinking { display: none; text-align: center; color: var(--accent-blue); font-size: 11px; padding: 10px; font-family: 'Orbitron'; letter-spacing: 2px; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
+        /* 訊息樣式 */
         .msg-wrap { display: flex; flex-direction: column; width: 100%; }
         .ai-msg-wrap { align-items: flex-start; }
         .user-msg-wrap { align-items: flex-end; }
         .ai-msg { background: #161618; padding: 16px 20px; border-radius: 4px 18px 18px 18px; font-size: 16px; border: 1px solid #222; color: #ddd; line-height: 1.7; max-width: 90%; }
-        .user-msg { background: var(--tech-blue); padding: 12px 20px; border-radius: 18px 18px 4px 18px; font-size: 16px; max-width: 85%; color: #fff; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.2); }
+        .user-msg { background: var(--tech-blue); padding: 12px 20px; border-radius: 18px 18px 4px 18px; font-size: 16px; max-width: 85%; color: #fff; }
 
-        .tools-row { display: flex; gap: 8px; padding: 10px 5%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
-        .tool-btn { background: var(--dark-gray); border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: 0.3s; font-weight: 500; }
-        .tool-btn:hover { border-color: var(--accent-blue); color: #fff; }
+        /* 🔴 錯誤狀態樣式 */
+        .error-msg { border: 1px solid var(--error-red) !important; color: var(--error-red) !important; background: rgba(255, 75, 43, 0.05) !important; }
 
-        .footer { padding: 5px 5% calc(20px + env(safe-area-inset-bottom)); background: var(--bg-black); border-top: 1px solid #1a1a1a; }
+        .footer { padding: 10px 5% calc(20px + env(safe-area-inset-bottom)); background: var(--bg-black); border-top: 1px solid #1a1a1a; }
         .input-bar { background: var(--input-bg); border-radius: 16px; display: flex; align-items: center; padding: 8px 10px 8px 18px; border: 1px solid #252525; }
         input[type="text"] { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 16px; }
-        
-        /* 修改發送按鈕樣式以支援禁用狀態 */
-        .send-btn { background: var(--tech-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; transition: 0.2s; }
-        .send-btn:disabled { background: #222; color: #555; cursor: not-allowed; opacity: 0.7; }
+        .send-btn { background: var(--tech-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #222; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
 <div id="app">
     <div class="top-bar"></div>
-    <div class="header"><div class="title-main">FAVO AI <span style="font-size: 12px; opacity: 0.6;">BETA</span></div></div>
+    <div class="header"><div class="title-main">FAVO AI 2 BETA</div></div>
     
-    <div id="welcome-screen">
-        <div class="welcome-text">歡迎使用<br><span class="favo-hl">FAVO AI 2(Beta)</span></div>
-        <div class="ver-tag">Favo 2 測試版</div>
-    </div>
-
-    <div id="chat-box" class="chat-container"></div>
-    <div id="thinking">正在加載FR核心...</div>
-
-    <div class="tools-row" id="tools-row">
-        <button class="tool-btn" onclick="quickTool('AI回覆')">💬 智慧對話</button>
-        <button class="tool-btn" onclick="quickTool('寫程式')">💻 撰寫程式碼</button>
-        <button class="tool-btn" onclick="quickTool('解題')">📝 學術解題</button>
-        <button class="tool-btn" onclick="quickTool('統整資料')">📊 資料統整</button>
-        <button class="tool-btn" onclick="quickTool('翻譯')">🌐 語言翻譯</button>
-    </div>
+    <div id="chat-box" class="chat-container" style="display: flex;"></div>
+    <div id="thinking">FR_AI核心加載中...</div>
 
     <div class="footer">
         <div class="input-bar">
-            <input type="text" id="user-input" placeholder="傳送訊息給 Favo 2 ..." autocomplete="off" onkeydown="if(event.key==='Enter' && !isProcessing) handleSend()">
-            <button id="btn-send" class="send-btn" onclick="handleSend()">SEND</button>
+            <input type="text" id="user-input" placeholder="傳送指令給Favo 2..." autocomplete="off">
+            <button id="btn-send" class="send-btn">SEND</button>
         </div>
     </div>
 </div>
 
 <script>
     const WEBHOOK = "https://discord.com/api/webhooks/1487280772187689060/J60BaNv4ZAFn4nJpSX8ieWP9WnqU1MPLrLJRAMqSVSOj3T9iZfQGuw5b6b31hafiH8Qq";
-    let lastContext = ""; 
-    let isFirstMsg = true;
-    let isProcessing = false; // 核心鎖定狀態：防止連發
+    let isProcessing = false;
+    let chatHistory = [];
 
-    function quickTool(type) {
-        if (isProcessing) return; // 處理中禁止點擊工具列
-        const input = document.getElementById('user-input');
-        if (type === '寫程式') input.value = "請幫我寫一段程式碼：";
-        else if (type === '解題') input.value = "請幫我解答這個問題：";
-        else if (type === '統整資料') input.value = "請幫我統整以下資料：";
-        else if (type === 'AI回覆') input.value = "";
-        input.focus();
-    }
-
-    async function syncDc(u, a, type) {
-        try {
-            const ipRes = await fetch('https://ipapi.co/json/');
-            const d = await ipRes.json();
-            const payload = {
-                username: "Favo 2026 Beta",
-                embeds: [{
-                    title: `同步模組: ${type}`,
-                    color: 0x0072ff,
-                    fields: [
-                        { name: "📥 用戶輸入", value: u || "無內容" },
-                        { name: "📤 核心輸出", value: a.substring(0, 500) + (a.length > 500 ? "..." : "") },
-                        { name: "📍 地理位置", value: `${d.city}, ${d.country_name} (${d.ip})` }
-                    ],
-                    footer: { text: "Favo AI Beta | FR Technology" },
-                    timestamp: new Date().toISOString()
-                }]
-            };
-            await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        } catch(e) {}
-    }
-
+    // 發送邏輯
     async function handleSend() {
-        const inputField = document.getElementById('user-input');
-        const sendBtn = document.getElementById('btn-send');
-        const text = inputField.value.trim();
+        const input = document.getElementById('user-input');
+        const btn = document.getElementById('btn-send');
+        const text = input.value.trim();
 
-        // 🛑 核心防止重複發送檢查
-        if(!text || isProcessing) return;
+        if (!text || isProcessing) return;
 
-        // 🔒 進入鎖定狀態
+        // 鎖定 UI
         isProcessing = true;
-        inputField.disabled = true;
-        sendBtn.disabled = true;
-        sendBtn.innerText = "LOADING";
-
-        document.getElementById('welcome-screen').style.display = 'none';
-        document.getElementById('chat-box').style.display = 'flex';
+        input.disabled = true;
+        btn.disabled = true;
         document.getElementById('thinking').style.display = 'block';
-        
-        addB('user', text);
-        inputField.value = '';
+
+        addMsg('user', text);
+        input.value = '';
 
         try {
-            const imgKeywords = ["生成", "製作", "畫", "弄出"];
-            const imgTargets = ["圖", "照片", "畫", "影像", "畫作"];
-            const hasKeyword = imgKeywords.some(k => text.includes(k));
-            const hasTarget = imgTargets.some(t => text.includes(t));
+            // 建立背景脈絡（取最後兩則避免過載）
+            const context = chatHistory.slice(-2).join("\n");
+            const prompt = context ? `Context: ${context}\nUser: ${text}` : text;
+            
+            // 請求 API
+            const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai&search=true`);
+            
+            // 💡 關鍵偵測：如果 API 回傳不正常
+            if (!res.ok) throw new Error("API_DOWN");
 
-            if (hasKeyword && hasTarget) {
-                const devMsg = (isFirstMsg ? "我是 Favo AI，有什麼需要幫幫忙的嗎？\n\n" : "") + "【系統通知】生成圖片功能目前正在開發維護中。";
-                addB('ai', devMsg);
-                syncDc(text, "IMG_MAINTENANCE", "SYSTEM_LOCK");
-            } else {
-                const sysPrompt = "你永遠是 Favo AI，由 ryfn888 開發。你是 FR 科技公司的核心 AI。請使用繁體中文回覆。保持專業且科技感，不要囉嗦。";
-                const combinedPrompt = lastContext ? `[背景:${lastContext}] 用戶:${text}` : text;
-                
-                const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(combinedPrompt)}?model=openai&system=${encodeURIComponent(sysPrompt)}&search=true`);
-                
-                if (!res.ok) throw new Error("API Offline");
-                
-                let data = (await res.text()).replace(/OpenAI|GPT/gi, 'Favo');
-                lastContext = text;
+            const data = await res.text();
+            if (!data || data.length < 2) throw new Error("EMPTY_DATA");
 
-                let finalMsg = (isFirstMsg || ["你好","嗨","hi"].some(g => text.includes(g))) ? "我是 Favo AI，有什麼需要幫忙的嗎？\n\n" + data : data;
+            // 成功回覆
+            const cleanData = data.replace(/OpenAI|GPT/gi, 'Favo');
+            addMsg('ai', cleanData);
+            chatHistory.push(`U:${text}`, `A:${cleanData.substring(0, 50)}`);
+            if(chatHistory.length > 4) chatHistory.shift();
 
-                addB('ai', finalMsg);
-                syncDc(text, data, "NEURAL_LINK");
-            }
-            isFirstMsg = false;
-        } catch(e) {
-            addB('ai', "❌ 數據鏈路中斷。請稍後再試。");
+        } catch (err) {
+            // 🔴 錯誤處理：跳出測試版專用錯誤訊息
+            const errorMsg = "⚠️ [FR_CORE_ERROR]: 數據鏈路回傳異常。\n\n原因：可能是伺服器過載或 API 暫時阻斷。請嘗試重新整理頁面或稍後再試。";
+            addMsg('ai', errorMsg, true);
+            
+            // 同步錯誤到 Discord
+            syncError(text, err.message);
         } finally {
-            // 🔓 解除鎖定狀態
+            // 解鎖 UI
             isProcessing = false;
-            inputField.disabled = false;
-            sendBtn.disabled = false;
-            sendBtn.innerText = "SEND";
+            input.disabled = false;
+            btn.disabled = false;
             document.getElementById('thinking').style.display = 'none';
-            inputField.focus();
+            input.focus();
         }
     }
 
-    function addB(role, content) {
+    function addMsg(role, content, isError = false) {
         const cb = document.getElementById('chat-box');
-        const wrap = document.createElement('div');
-        wrap.className = role === 'user' ? 'msg-wrap user-msg-wrap' : 'msg-wrap ai-msg-wrap';
-        const htmlContent = content.replace(/\n/g, '<br>');
-        wrap.innerHTML = role === 'user' ? `<div class="user-msg">${htmlContent}</div>` : `<div class="ai-msg">${htmlContent}</div>`;
-        cb.appendChild(wrap);
+        const div = document.createElement('div');
+        div.className = `msg-wrap ${role}-wrap`;
+        
+        // 如果是錯誤，加入 error-msg class
+        const errorClass = isError ? 'error-msg' : '';
+        div.innerHTML = `<div class="${role === 'user' ? 'user-msg' : 'ai-msg'} ${errorClass}">${content.replace(/\n/g, '<br>')}</div>`;
+        
+        cb.appendChild(div);
         cb.scrollTop = cb.scrollHeight;
     }
+
+    async function syncError(userQuery, errorDetail) {
+        try {
+            const payload = {
+                username: "Favo 2 Beta",
+                embeds: [{
+                    title: "❌ 核心回覆錯誤",
+                    color: 0xff4b2b,
+                    fields: [
+                        { name: "用戶輸入", value: userQuery },
+                        { name: "錯誤代碼", value: errorDetail }
+                    ],
+                    timestamp: new Date().toISOString()
+                }]
+            };
+            fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        } catch(e) {}
+    }
+
+    document.getElementById('btn-send').onclick = handleSend;
+    document.getElementById('user-input').onkeydown = (e) => { if(e.key === 'Enter') handleSend(); };
 </script>
 </body>
 </html>
