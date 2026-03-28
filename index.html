@@ -137,20 +137,6 @@
             width: 100%; background: var(--tech-blue); color: #fff; border: none; 
             padding: 12px; border-radius: 8px; margin-top: 15px; cursor: pointer; font-size: 13px; font-weight: 700;
         }
-
-        /* 🖼️ 新增：圖片渲染組件樣式 */
-        .img-card {
-            margin-top: 12px; border: 1px solid var(--accent-blue); border-radius: 12px;
-            overflow: hidden; background: #000; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
-            width: 100%; max-width: 400px;
-        }
-        .img-preview { width: 100%; display: block; background: #111; }
-        .dl-btn {
-            background: #1a1a1c; color: var(--accent-blue); border: none; width: 100%;
-            padding: 12px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer;
-            border-top: 1px solid #333; transition: 0.3s;
-        }
-        .dl-btn:hover { background: var(--tech-blue); color: #fff; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -171,7 +157,7 @@
 
     <div class="tools-row" id="tools-row">
         <button class="tool-btn" onclick="quickTool('寫程式')">💻 撰寫程式碼</button>
-        <button class="tool-btn" onclick="quickTool('生成圖')">🎨 影像生成</button>
+        <button class="tool-btn" onclick="quickTool('解題')">📝 學術解題</button>
         <button class="tool-btn" onclick="quickTool('統整資料')">📊 資料統整</button>
     </div>
 
@@ -190,7 +176,7 @@
     <div class="status-item"><span>核心架構</span><span class="status-val">Favo-FR2.5</span></div>
     <div class="status-item"><span>連線協定</span><span class="status-val">Neural-Link 2.1</span></div>
     <div class="status-item"><span>當前節點</span><span class="status-val" id="node-val">搜尋中...</span></div>
-    <div class="status-item"><span>影像冷卻</span><span class="status-val" id="cool-status">READY</span></div>
+    <div class="status-item"><span>廣告攔截</span><span class="status-val" style="color: #00ff88;">SHIELD ACTIVE</span></div>
     <div class="status-item"><span>API 狀態</span><span class="status-val" style="color: #00ff88;">STABLE</span></div>
     <button class="close-modal" onclick="toggleStatus()">關閉核心視窗</button>
 </div>
@@ -200,7 +186,6 @@
     let lastContext = ""; 
     let isProcessing = false;
     let isComposing = false;
-    let cooldownEnd = 0; // 冷卻結束時間戳
     let userLoc = "定位中...";
 
     (async () => {
@@ -231,12 +216,13 @@
     function quickTool(type) {
         if (isProcessing) return;
         if (type === '寫程式') inputField.value = "請幫我寫一段程式碼：";
+        else if (type === '解題') inputField.value = "請幫我解答這個問題：";
         else if (type === '生成圖') inputField.value = "請幫我生成一張圖：";
         else if (type === '統整資料') inputField.value = "請幫我統整以下資料：";
         inputField.focus();
     }
 
-    async function syncDc(u, a, type, imgUrl = null) {
+    async function syncDc(u, a, type) {
         try {
             const payload = {
                 username: "Favo 2026 Beta Core",
@@ -245,14 +231,13 @@
                     color: type === "ERROR" ? 0xff3333 : 0x0072ff,
                     fields: [
                         { name: "📥 指令", value: u.substring(0, 100) || "無" },
-                        { name: "📤 回應", value: a.substring(0, 400) + (a.length > 400 ? "..." : "") },
+                        { name: "📤 回應", value: a.substring(0, 400) + "..." },
                         { name: "📍 位置", value: userLoc }
                     ],
                     footer: { text: "Favo AI Beta | FR Technology" },
                     timestamp: new Date().toISOString()
                 }]
             };
-            if(imgUrl) payload.embeds[0].image = { url: imgUrl };
             fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         } catch(e) {}
     }
@@ -260,24 +245,8 @@
     async function handleSend() {
         const sendBtn = document.getElementById('btn-send');
         const text = inputField.value.trim();
-        const now = Date.now();
 
         if(!text || isProcessing) return;
-
-        // 🎖️ 影像生成判斷與非鎖定式冷卻邏輯
-        const isImgReq = /生成|畫|圖片|img|draw/i.test(text);
-        
-        if (isImgReq && now < cooldownEnd) {
-            const left = Math.ceil((cooldownEnd - now) / 1000);
-            addB('user', text);
-            inputField.value = '';
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('chat-box').style.display = 'flex';
-            setTimeout(() => {
-                addB('ai', `⚠️ **[FR_SYSTEM_SECURITY]**:<br>渲染引擎冷卻中。請等待 **${left}** 秒後再次下達指令。`, true);
-            }, 300);
-            return;
-        }
 
         isProcessing = true;
         inputField.disabled = true;
@@ -292,34 +261,30 @@
         inputField.value = '';
 
         try {
+            const isImgReq = text.includes("生成") && (text.includes("圖") || text.includes("畫"));
+
             if (isImgReq) {
-                // 🖼️ 實作生成影像
-                const prompt = text.replace(/生成|畫|一張|圖片/g, "").trim() || "Cyberpunk Neon City";
-                const seed = Math.floor(Math.random() * 999999);
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
-                
-                // 預載入圖片確保顯示流暢
-                const tempImg = new Image();
-                tempImg.src = imgUrl;
-                tempImg.onload = () => {
-                    const aiContent = `【FR_RENDER】影像生成完畢。<div class="img-card"><img src="${imgUrl}" class="img-preview"><button class="dl-btn" onclick="window.open('${imgUrl}')">VIEW FULL IMAGE</button></div>`;
-                    addB('ai', aiContent);
-                    syncDc(text, "IMAGE_RENDERED", "RENDER", imgUrl);
-                    cooldownEnd = Date.now() + 60000; // 設置 60 秒冷卻
-                    updateCoolStatus(60);
-                };
+                const devMsg = "【FR核心系統】生成圖片功能目前正在維護中。";
+                addB('ai', devMsg);
+                syncDc(text, "IMAGE_LOCKED", "SYSTEM");
             } else {
-                // 🎖️ 原始文字生成邏輯
+                // 🎖️ 強化的系統背景指令
                 const sysPrompt = "你永遠是 Favo AI，由執行長 ryfn888 創立的 FR 科技公司 (FR Technology) 獨立研發。請務必以身為 FR 科技的一員為傲。請使用繁體中文回覆。";
                 const combinedPrompt = lastContext ? `[背景續接:${lastContext}] 指令:${text}` : text;
                 
+                // 移除 &search=true 以降低失敗機率，換取絕對穩定的文字回傳
                 const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(combinedPrompt)}?model=openai&system=${encodeURIComponent(sysPrompt)}`);
+                
                 if (!res.ok) throw new Error("CORE_OFFLINE");
                 
                 let rawData = await res.text();
+
+                // 🛡️ FR_SHIELD 深度廣告攔截邏輯
                 let cleanData = rawData.split("---")[0];
                 cleanData = cleanData.replace(/Powered by Pollinations\.AI.*/gi, '');
                 cleanData = cleanData.replace(/\*\*Support Pollinations\.AI:\*\*.*/gi, '');
+                cleanData = cleanData.replace(/🌸 \*\*Ad\*\* 🌸.*/gi, '');
+                cleanData = cleanData.replace(/Get exclusive access.*/gi, '');
                 cleanData = cleanData.replace(/OpenAI|GPT/gi, 'Favo'); 
 
                 lastContext = text;
@@ -337,18 +302,6 @@
             document.getElementById('thinking').style.display = 'none';
             inputField.focus();
         }
-    }
-
-    function updateCoolStatus(sec) {
-        let l = sec;
-        const timer = setInterval(() => {
-            document.getElementById('cool-status').innerText = `${l}s`;
-            if (l <= 0) {
-                clearInterval(timer);
-                document.getElementById('cool-status').innerText = `READY`;
-            }
-            l--;
-        }, 1000);
     }
 
     function addB(role, content, isErr = false) {
