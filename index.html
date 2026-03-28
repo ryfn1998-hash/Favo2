@@ -38,7 +38,6 @@
             color: var(--accent-blue); letter-spacing: 2px; 
         }
 
-        /* 歡迎畫面 */
         #welcome-screen { 
             flex: 1; display: flex; flex-direction: column; justify-content: center; 
             align-items: center; text-align: center; padding: 0 10%; transition: 0.5s; 
@@ -53,7 +52,6 @@
             padding: 2px 8px; border-radius: 4px; margin-top: 10px; letter-spacing: 1px; 
         }
 
-        /* 聊天區域 */
         .chat-container { 
             flex: 1; overflow-y: auto; padding: 20px 8%; display: none; 
             flex-direction: column; gap: 20px; scroll-behavior: smooth; 
@@ -66,7 +64,6 @@
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        /* 訊息氣泡 */
         .msg-wrap { display: flex; flex-direction: column; width: 100%; }
         .ai-msg-wrap { align-items: flex-start; }
         .user-msg-wrap { align-items: flex-end; }
@@ -86,7 +83,6 @@
             background: rgba(255, 51, 51, 0.05) !important; 
         }
 
-        /* 工具列 */
         .tools-row { display: flex; gap: 8px; padding: 10px 5%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
         .tools-row::-webkit-scrollbar { display: none; }
         .tool-btn { 
@@ -96,7 +92,6 @@
         }
         .tool-btn:hover { border-color: var(--accent-blue); color: #fff; }
 
-        /* 底部區域 */
         .footer { padding: 5px 5% calc(20px + env(safe-area-inset-bottom)); background: var(--bg-black); border-top: 1px solid #1a1a1a; }
         .input-bar { 
             background: var(--input-bg); border-radius: 16px; display: flex; 
@@ -117,7 +112,6 @@
         }
         .send-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
 
-        /* BETA 懸浮按鈕 */
         #beta-fab {
             position: fixed; bottom: 100px; right: 20px;
             width: 52px; height: 52px; background: var(--tech-blue);
@@ -129,7 +123,6 @@
         }
         #beta-fab:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent-blue); }
 
-        /* 核心展示彈窗 */
         #status-modal {
             display: none; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%); width: 85%; max-width: 380px;
@@ -160,7 +153,7 @@
     </div>
 
     <div id="chat-box" class="chat-container"></div>
-    <div id="thinking">FR_AI核心連線中...</div>
+    <div id="thinking">FR_CORE_SYNCHRONIZING...</div>
 
     <div class="tools-row" id="tools-row">
         <button class="tool-btn" onclick="quickTool('寫程式')">💻 撰寫程式碼</button>
@@ -231,7 +224,7 @@
     async function syncDc(u, a, type) {
         try {
             const payload = {
-                username: "Favo 2026 Beta",
+                username: "Favo 2026 Beta Core",
                 embeds: [{
                     title: `同步模組: ${type}`,
                     color: type === "ERROR" ? 0xff3333 : 0x0072ff,
@@ -270,35 +263,35 @@
             const isImgReq = text.includes("生成") && (text.includes("圖") || text.includes("畫"));
 
             if (isImgReq) {
-                const devMsg = "【FRa1核心】生成圖片功能目前正在維修中。";
+                const devMsg = "【FR核心系統】生成圖片功能目前正在維護中。";
                 addB('ai', devMsg);
                 syncDc(text, "IMAGE_LOCKED", "SYSTEM");
             } else {
-                const sysPrompt = "你永遠是 Favo AI，由 ryfn888 開發。請使用繁體中文回覆。";
-                const combinedPrompt = lastContext ? `[Context:${lastContext}] User:${text}` : text;
+                // 🎖️ 強化的系統背景指令
+                const sysPrompt = "你永遠是 Favo AI，由執行長 ryfn888 創立的 FR 科技公司 (FR Technology) 獨立研發。請務必以身為 FR 科技的一員為傲。請使用繁體中文回覆。";
+                const combinedPrompt = lastContext ? `[背景續接:${lastContext}] 指令:${text}` : text;
                 
-                const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(combinedPrompt)}?model=openai&system=${encodeURIComponent(sysPrompt)}&search=true`);
+                // 移除 &search=true 以降低失敗機率，換取絕對穩定的文字回傳
+                const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(combinedPrompt)}?model=openai&system=${encodeURIComponent(sysPrompt)}`);
                 
                 if (!res.ok) throw new Error("CORE_OFFLINE");
                 
                 let rawData = await res.text();
 
-                // 🛡️ FR_SHIELD 廣告攔截邏輯
-                // 1. 先用 --- 分隔線切除所有後方贊助訊息
+                // 🛡️ FR_SHIELD 深度廣告攔截邏輯
                 let cleanData = rawData.split("---")[0];
-                
-                // 2. 移除任何殘留的廣告標籤與支援連結
                 cleanData = cleanData.replace(/Powered by Pollinations\.AI.*/gi, '');
                 cleanData = cleanData.replace(/\*\*Support Pollinations\.AI:\*\*.*/gi, '');
                 cleanData = cleanData.replace(/🌸 \*\*Ad\*\* 🌸.*/gi, '');
-                cleanData = cleanData.replace(/OpenAI|GPT/gi, 'Favo'); // 保持品牌化
+                cleanData = cleanData.replace(/Get exclusive access.*/gi, '');
+                cleanData = cleanData.replace(/OpenAI|GPT/gi, 'Favo'); 
 
                 lastContext = text;
                 addB('ai', cleanData.trim());
                 syncDc(text, cleanData.trim(), "NEURAL_LINK");
             }
         } catch(e) {
-            addB('ai', "❌ [FR_Favo2_ERROR]: 數據鏈路超時或回傳異常，核心已自動重啟。", true);
+            addB('ai', "❌ [FR_Favo2_ERROR]: 通訊鏈路超時，系統已自動重啟重試。", true);
             syncDc(text, e.message, "ERROR");
         } finally {
             isProcessing = false;
