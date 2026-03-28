@@ -16,37 +16,32 @@
         .header { padding: 12px 0; text-align: center; border-bottom: 1px solid #1a1a1a; background: rgba(8,8,10,0.95); backdrop-filter: blur(10px); z-index: 100; }
         .title-main { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; color: var(--accent-blue); letter-spacing: 2px; }
 
-        /* 歡迎畫面 */
         #welcome-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%; transition: 0.5s; }
         .welcome-text { font-size: 48px; font-weight: 900; color: #fff; text-shadow: 0 0 25px rgba(0, 242, 255, 0.5); margin-bottom: 10px; }
         .favo-hl { color: var(--accent-blue); font-family: 'Orbitron'; }
         .ver-tag { font-family: 'Orbitron'; font-size: 10px; background: var(--tech-blue); padding: 2px 8px; border-radius: 4px; margin-top: 10px; letter-spacing: 1px; }
 
-        /* 聊天區域 */
         .chat-container { flex: 1; overflow-y: auto; padding: 20px 8%; display: none; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
         #thinking { display: none; text-align: center; color: var(--accent-blue); font-size: 11px; padding: 10px; font-family: 'Orbitron'; letter-spacing: 2px; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        /* 訊息氣泡 */
         .msg-wrap { display: flex; flex-direction: column; width: 100%; }
         .ai-msg-wrap { align-items: flex-start; }
         .user-msg-wrap { align-items: flex-end; }
         .ai-msg { background: #161618; padding: 16px 20px; border-radius: 4px 18px 18px 18px; font-size: 16px; border: 1px solid #222; color: #ddd; line-height: 1.7; max-width: 90%; }
         .user-msg { background: var(--tech-blue); padding: 12px 20px; border-radius: 18px 18px 4px 18px; font-size: 16px; max-width: 85%; color: #fff; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.2); }
 
-        /* 🛠️ 工具列 */
         .tools-row { display: flex; gap: 8px; padding: 10px 5%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
-        .tools-row::-webkit-scrollbar { display: none; }
         .tool-btn { background: var(--dark-gray); border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: 0.3s; font-weight: 500; }
-        .tool-btn:hover { border-color: var(--accent-blue); color: #fff; background: #222; }
+        .tool-btn:hover { border-color: var(--accent-blue); color: #fff; }
 
-        /* 底部區域 */
         .footer { padding: 5px 5% calc(20px + env(safe-area-inset-bottom)); background: var(--bg-black); border-top: 1px solid #1a1a1a; }
-        .input-bar { background: var(--input-bg); border-radius: 16px; display: flex; align-items: center; padding: 8px 10px 8px 18px; border: 1px solid #252525; transition: 0.3s; }
-        .input-bar:focus-within { border-color: var(--tech-blue); box-shadow: 0 0 10px rgba(0, 114, 255, 0.1); }
+        .input-bar { background: var(--input-bg); border-radius: 16px; display: flex; align-items: center; padding: 8px 10px 8px 18px; border: 1px solid #252525; }
         input[type="text"] { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 16px; }
+        
+        /* 修改發送按鈕樣式以支援禁用狀態 */
         .send-btn { background: var(--tech-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; transition: 0.2s; }
-        .send-btn:active { transform: scale(0.95); opacity: 0.8; }
+        .send-btn:disabled { background: #222; color: #555; cursor: not-allowed; opacity: 0.7; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -73,7 +68,7 @@
 
     <div class="footer">
         <div class="input-bar">
-            <input type="text" id="user-input" placeholder="傳送訊息給 Favo 2 ..." autocomplete="off" onkeydown="if(event.key==='Enter') handleSend()">
+            <input type="text" id="user-input" placeholder="傳送訊息給 Favo 2 ..." autocomplete="off" onkeydown="if(event.key==='Enter' && !isProcessing) handleSend()">
             <button id="btn-send" class="send-btn" onclick="handleSend()">SEND</button>
         </div>
     </div>
@@ -82,9 +77,11 @@
 <script>
     const WEBHOOK = "https://discord.com/api/webhooks/1487280772187689060/J60BaNv4ZAFn4nJpSX8ieWP9WnqU1MPLrLJRAMqSVSOj3T9iZfQGuw5b6b31hafiH8Qq";
     let lastContext = ""; 
-    let isFirstMsg = true; // 用於判斷是否顯示開場白
+    let isFirstMsg = true;
+    let isProcessing = false; // 核心鎖定狀態：防止連發
 
     function quickTool(type) {
+        if (isProcessing) return; // 處理中禁止點擊工具列
         const input = document.getElementById('user-input');
         if (type === '寫程式') input.value = "請幫我寫一段程式碼：";
         else if (type === '解題') input.value = "請幫我解答這個問題：";
@@ -112,34 +109,40 @@
                 }]
             };
             await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        } catch(e) { console.error("DC Sync Error"); }
+        } catch(e) {}
     }
 
     async function handleSend() {
-        const i = document.getElementById('user-input');
-        const text = i.value.trim();
-        if(!text) return;
+        const inputField = document.getElementById('user-input');
+        const sendBtn = document.getElementById('btn-send');
+        const text = inputField.value.trim();
 
-        // 切換介面
+        // 🛑 核心防止重複發送檢查
+        if(!text || isProcessing) return;
+
+        // 🔒 進入鎖定狀態
+        isProcessing = true;
+        inputField.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.innerText = "LOADING";
+
         document.getElementById('welcome-screen').style.display = 'none';
         document.getElementById('chat-box').style.display = 'flex';
         document.getElementById('thinking').style.display = 'block';
         
         addB('user', text);
-        i.value = '';
+        inputField.value = '';
 
         try {
-            // 🎨 生成圖片判斷 (邏輯優化：多關鍵字攔截)
             const imgKeywords = ["生成", "製作", "畫", "弄出"];
             const imgTargets = ["圖", "照片", "畫", "影像", "畫作"];
             const hasKeyword = imgKeywords.some(k => text.includes(k));
             const hasTarget = imgTargets.some(t => text.includes(t));
 
             if (hasKeyword && hasTarget) {
-                const devMsg = (isFirstMsg ? "我是 Favo AI，有什麼需要幫幫忙的嗎？\n\n" : "") + "【系統通知】生成圖片功能目前正在開發維護中。您可以嘗試詢問文字問題或程式編寫。";
+                const devMsg = (isFirstMsg ? "我是 Favo AI，有什麼需要幫幫忙的嗎？\n\n" : "") + "【系統通知】生成圖片功能目前正在開發維護中。";
                 addB('ai', devMsg);
                 syncDc(text, "IMG_MAINTENANCE", "SYSTEM_LOCK");
-                isFirstMsg = false;
             } else {
                 const sysPrompt = "你永遠是 Favo AI，由 ryfn888 開發。你是 FR 科技公司的核心 AI。請使用繁體中文回覆。保持專業且科技感，不要囉嗦。";
                 const combinedPrompt = lastContext ? `[背景:${lastContext}] 用戶:${text}` : text;
@@ -151,25 +154,22 @@
                 let data = (await res.text()).replace(/OpenAI|GPT/gi, 'Favo');
                 lastContext = text;
 
-                // 智能問候語邏輯
-                let finalMsg = "";
-                const greetings = ["你好", "嗨", "hello", "hi", "打招呼", "誰"];
-                const isGreeting = greetings.some(g => text.toLowerCase().includes(g));
-
-                if (isFirstMsg || isGreeting) {
-                    finalMsg = "我是 Favo AI，有什麼需要幫忙的嗎？\n\n" + data;
-                } else {
-                    finalMsg = data; // 直接顯示內容
-                }
+                let finalMsg = (isFirstMsg || ["你好","嗨","hi"].some(g => text.includes(g))) ? "我是 Favo AI，有什麼需要幫忙的嗎？\n\n" + data : data;
 
                 addB('ai', finalMsg);
                 syncDc(text, data, "NEURAL_LINK");
-                isFirstMsg = false;
             }
+            isFirstMsg = false;
         } catch(e) {
-            addB('ai', "❌ 數據鏈路中斷。請檢查您的網路連線或稍後再試。");
+            addB('ai', "❌ 數據鏈路中斷。請稍後再試。");
         } finally {
+            // 🔓 解除鎖定狀態
+            isProcessing = false;
+            inputField.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.innerText = "SEND";
             document.getElementById('thinking').style.display = 'none';
+            inputField.focus();
         }
     }
 
@@ -177,10 +177,8 @@
         const cb = document.getElementById('chat-box');
         const wrap = document.createElement('div');
         wrap.className = role === 'user' ? 'msg-wrap user-msg-wrap' : 'msg-wrap ai-msg-wrap';
-        
         const htmlContent = content.replace(/\n/g, '<br>');
         wrap.innerHTML = role === 'user' ? `<div class="user-msg">${htmlContent}</div>` : `<div class="ai-msg">${htmlContent}</div>`;
-        
         cb.appendChild(wrap);
         cb.scrollTop = cb.scrollHeight;
     }
