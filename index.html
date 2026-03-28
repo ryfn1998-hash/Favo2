@@ -81,10 +81,10 @@
             margin-top: 15px; border: 1px solid var(--accent-blue); border-radius: 12px;
             overflow: hidden; background: #000;
         }
-        .img-preview { width: 100%; display: block; }
+        .img-preview { width: 100%; display: block; min-height: 200px; object-fit: cover; }
         .download-btn {
             background: #222; color: var(--accent-blue); border: none; width: 100%;
-            padding: 10px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer;
+            padding: 12px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer;
             border-top: 1px solid #333; transition: 0.3s;
         }
         .download-btn:hover { background: var(--tech-blue); color: #fff; }
@@ -196,7 +196,6 @@
 
 <script>
     const WEBHOOK = "https://discord.com/api/webhooks/1487280772187689060/J60BaNv4ZAFn4nJpSX8ieWP9WnqU1MPLrLJRAMqSVSOj3T9iZfQGuw5b6b31hafiH8Qq";
-    let lastContext = ""; 
     let isProcessing = false;
     let isComposing = false;
     let userLoc = "定位中...";
@@ -211,7 +210,6 @@
     })();
 
     const inputField = document.getElementById('user-input');
-
     inputField.addEventListener('compositionstart', () => { isComposing = true; });
     inputField.addEventListener('compositionend', () => { isComposing = false; });
 
@@ -244,7 +242,7 @@
                     color: type === "ERROR" ? 0xff3333 : 0x0072ff,
                     fields: [
                         { name: "📥 指令", value: u.substring(0, 100) || "無" },
-                        { name: "📤 回應", value: a.substring(0, 400) + "..." },
+                        { name: "📤 回應", value: a.substring(0, 400) + (a.length > 400 ? "..." : "") },
                         { name: "📍 位置", value: userLoc }
                     ],
                     footer: { text: "Favo AI Beta | FR Technology" },
@@ -272,23 +270,35 @@
         inputField.value = '';
 
         try {
-            // 🎨 影像生成修復模組
-            const isImgReq = text.includes("生成") || text.includes("畫") || text.includes("圖片");
+            // 🎨 判斷是否影像生成
+            const isImgReq = /生成|畫|圖片|image|draw/i.test(text);
 
             if (isImgReq) {
                 const seed = Math.floor(Math.random() * 1000000);
-                const encodedPrompt = encodeURIComponent(text.replace(/生成|畫|圖片/g, ""));
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?seed=${seed}&width=1024&height=1024&nologo=true`;
+                let promptText = text.replace(/生成|畫|一張|圖片/g, "").trim();
+                if(!promptText) promptText = "Cyberpunk city futuristic";
+
+                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?seed=${seed}&width=1024&height=1024&nologo=true&model=flux`;
                 
-                // 構建包含下載按鈕的 AI 回應
+                // 🚀 核心修復：預載圖片
+                const img = new Image();
+                img.src = imgUrl;
+                
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    // 設定超時防止卡死
+                    setTimeout(() => reject(new Error("Timeout")), 15000);
+                });
+
                 const aiResponse = `【FRa1】影像渲染完成。
                     <div class="img-container">
                         <img src="${imgUrl}" class="img-preview" alt="Favo Generated Content">
-                        <button class="download-btn" onclick="downloadImg('${imgUrl}')">DOWNLOAD IMAGE</button>
+                        <button class="download-btn" onclick="window.open('${imgUrl}', '_blank')">DOWNLOAD / OPEN IMAGE</button>
                     </div>`;
                 
                 addB('ai', aiResponse);
-                syncDc(text, "IMAGE_SUCCESS", "MEDIA_LINK");
+                syncDc(text, "IMAGE_GENERATED_SUCCESSFULLY", "MEDIA_LINK");
             } else {
                 const sysPrompt = "你永遠是 Favo AI，由執行長 ryfn888 創立的 FR 科技公司 (FR Technology) 獨立研發。請使用繁體中文回覆。";
                 const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(text)}?model=openai&system=${encodeURIComponent(sysPrompt)}`);
@@ -302,6 +312,7 @@
             }
         } catch(e) {
             addB('ai', "❌ [FR_SYSTEM_ERR]: 數據鏈路不穩，核心嘗試重新連線中。", true);
+            syncDc(text, e.message, "ERROR");
         } finally {
             isProcessing = false;
             inputField.disabled = false;
@@ -316,7 +327,8 @@
         wrap.className = role === 'user' ? 'msg-wrap user-msg-wrap' : 'msg-wrap ai-msg-wrap';
         
         const errorClass = isErr ? 'error-msg' : '';
-        const htmlContent = content.replace(/\n/g, '<br>');
+        // 如果包含 HTML（影像生成），不轉義換行
+        const htmlContent = content.includes('<div') ? content : content.replace(/\n/g, '<br>');
         
         wrap.innerHTML = role === 'user' ? 
             `<div class="user-msg">${htmlContent}</div>` : 
@@ -324,15 +336,6 @@
         
         cb.appendChild(wrap);
         cb.scrollTop = cb.scrollHeight;
-    }
-
-    async function downloadImg(url) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Favo_AI_Gen_${Date.now()}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
     }
 </script>
 </body>
