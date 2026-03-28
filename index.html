@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Favo 2 AI Beta - FR Technology</title>
+    <title>Favo 2 AI Beta - FR</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@300;500;700&display=swap');
         
@@ -134,7 +134,7 @@
     </div>
 
     <div id="chat-box" class="chat-container"></div>
-    <div id="thinking">FR_CORE 數據鏈路連接中...</div>
+    <div id="thinking">FR_AI核心加載中...</div>
 
     <div class="tools-row" id="tools-row">
         <button class="tool-btn" onclick="quickTool('寫程式')">💻 撰寫程式碼</button>
@@ -189,7 +189,7 @@
     async function syncDc(u, a, type) {
         try {
             const payload = {
-                username: "Favo 2026 Beta 監控",
+                username: "Favo 2026 Beta",
                 embeds: [{
                     title: `同步模組: ${type}`,
                     color: type === "ERROR" ? 0xff3333 : 0x0072ff,
@@ -230,7 +230,7 @@
             const isImgReq = text.includes("生成") && (text.includes("圖") || text.includes("畫"));
 
             if (isImgReq) {
-                const devMsg = "【核心通知】圖片生成功能模組目前正在進行底層維護，請稍後再試。";
+                const devMsg = "【FRa1核心】生成圖片功能目前正在開發維護中，敬請期待未來的更新版本。";
                 addB('ai', devMsg);
                 syncDc(text, "IMAGE_LOCKED", "SYSTEM");
             } else {
@@ -249,7 +249,7 @@
             }
         } catch(e) {
             // 🔴 錯誤回饋機制
-            addB('ai', "❌ [FR_CORE_ERROR]: 數據鏈路超時或回傳異常，核心已自動重啟。", true);
+            addB('ai', "❌ [FR_Favo2_ERROR]: 數據鏈路超時或回傳異常，核心已自動重啟。(本版本在測試）", true);
             syncDc(text, e.message, "ERROR");
         } finally {
             // 解鎖
