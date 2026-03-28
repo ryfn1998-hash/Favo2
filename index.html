@@ -77,18 +77,6 @@
             font-size: 16px; max-width: 85%; color: #fff; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.2); 
         }
         
-        .img-card {
-            margin-top: 12px; border: 1px solid var(--accent-blue); border-radius: 12px;
-            overflow: hidden; background: #000; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
-            width: 100%; max-width: 400px;
-        }
-        .img-preview { width: 100%; display: block; background: #111; }
-        .dl-btn {
-            background: #1a1a1c; color: var(--accent-blue); border: none; width: 100%;
-            padding: 12px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer;
-            border-top: 1px solid #333; transition: 0.3s;
-        }
-
         .error-msg { 
             border: 1px solid var(--error-red) !important; 
             color: var(--error-red) !important; 
@@ -96,25 +84,68 @@
         }
 
         .tools-row { display: flex; gap: 8px; padding: 10px 5%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+        .tools-row::-webkit-scrollbar { display: none; }
         .tool-btn { 
             background: var(--dark-gray); border: 1px solid #333; color: #aaa; 
             padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; 
+            transition: 0.3s; font-weight: 500; 
         }
+        .tool-btn:hover { border-color: var(--accent-blue); color: #fff; }
 
         .footer { padding: 5px 5% calc(20px + env(safe-area-inset-bottom)); background: var(--bg-black); border-top: 1px solid #1a1a1a; }
-        .input-bar { background: var(--input-bg); border-radius: 16px; display: flex; align-items: center; padding: 8px 10px 8px 18px; border: 1px solid #252525; }
-        input[type="text"] { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 16px; }
-        .send-btn { background: var(--tech-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; }
+        .input-bar { 
+            background: var(--input-bg); border-radius: 16px; display: flex; 
+            align-items: center; padding: 8px 10px 8px 18px; border: 1px solid #252525; transition: 0.3s; 
+        }
+        .input-bar:focus-within { border-color: var(--tech-blue); }
+        
+        input[type="text"] { 
+            flex: 1; background: transparent; border: none; color: #fff; 
+            outline: none; font-size: 16px; 
+        }
+        input[type="text"]:disabled { opacity: 0.5; }
 
-        #beta-fab { position: fixed; bottom: 100px; right: 20px; width: 52px; height: 52px; background: var(--tech-blue); border-radius: 50%; border: 2px solid var(--accent-blue); color: white; font-family: 'Orbitron'; font-size: 10px; display: flex; align-items: center; justify-content: center; z-index: 999; }
-        #status-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 380px; background: rgba(18, 18, 20, 0.98); border: 1px solid var(--accent-blue); border-radius: 15px; padding: 25px; z-index: 1000; backdrop-filter: blur(20px); }
+        .send-btn { 
+            background: var(--tech-blue); color: #fff; border: none; 
+            padding: 10px 20px; border-radius: 12px; font-weight: 900; 
+            cursor: pointer; font-family: 'Orbitron'; font-size: 11px; transition: 0.2s; 
+        }
+        .send-btn:disabled { background: #222; color: #555; cursor: not-allowed; }
+
+        #beta-fab {
+            position: fixed; bottom: 100px; right: 20px;
+            width: 52px; height: 52px; background: var(--tech-blue);
+            border-radius: 50%; border: 2px solid var(--accent-blue);
+            color: white; font-family: 'Orbitron'; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 0 15px var(--tech-blue);
+            z-index: 999; transition: 0.3s;
+        }
+        #beta-fab:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent-blue); }
+
+        #status-modal {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); width: 85%; max-width: 380px;
+            background: rgba(18, 18, 20, 0.98); border: 1px solid var(--accent-blue);
+            border-radius: 15px; padding: 25px; z-index: 1000;
+            backdrop-filter: blur(20px); box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        }
+        #status-modal h3 { font-family: 'Orbitron'; color: var(--accent-blue); margin-top: 0; font-size: 16px; letter-spacing: 1px; }
+        .status-item { display: flex; justify-content: space-between; margin: 12px 0; font-size: 14px; border-bottom: 1px solid #222; padding-bottom: 8px; color: #aaa; }
+        .status-val { color: var(--accent-blue); font-family: 'Orbitron'; font-size: 12px; }
+        .close-modal { 
+            width: 100%; background: var(--tech-blue); color: #fff; border: none; 
+            padding: 12px; border-radius: 8px; margin-top: 15px; cursor: pointer; font-size: 13px; font-weight: 700;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
 <div id="app">
     <div class="top-bar"></div>
-    <div class="header"><div class="title-main">FAVO AI <span style="font-size: 12px; opacity: 0.6;">BETA</span></div></div>
+    <div class="header">
+        <div class="title-main">FAVO AI <span style="font-size: 12px; opacity: 0.6;">BETA</span></div>
+    </div>
     
     <div id="welcome-screen">
         <div class="welcome-text">歡迎使用<br><span class="favo-hl">FAVO AI 2</span></div>
@@ -122,11 +153,12 @@
     </div>
 
     <div id="chat-box" class="chat-container"></div>
-    <div id="thinking">FR_FAVO 2 核心處理中...</div>
+    <div id="thinking">FR_FAVO 2 核心連接中...</div>
 
-    <div class="tools-row">
+    <div class="tools-row" id="tools-row">
         <button class="tool-btn" onclick="quickTool('寫程式')">💻 撰寫程式碼</button>
-        <button class="tool-btn" onclick="quickTool('生成圖')">🎨 影像生成</button>
+        <button class="tool-btn" onclick="quickTool('解題')">📝 學術解題</button>
+        <button class="tool-btn" onclick="quickTool('統整資料')">📊 資料統整</button>
     </div>
 
     <div class="footer">
@@ -142,52 +174,85 @@
 <div id="status-modal">
     <h3>CORE SYSTEM STATUS</h3>
     <div class="status-item"><span>核心架構</span><span class="status-val">Favo-FR2.5</span></div>
-    <div class="status-item"><span>渲染引擎</span><span class="status-val" style="color:#00ff88;">READY</span></div>
-    <div class="status-item"><span>冷卻狀態</span><span class="status-val" id="cool-status">待命</span></div>
-    <button style="width:100%; background:var(--tech-blue); color:#fff; border:none; padding:10px; margin-top:10px;" onclick="toggleStatus()">關閉</button>
+    <div class="status-item"><span>連線協定</span><span class="status-val">Neural-Link 2.1</span></div>
+    <div class="status-item"><span>當前節點</span><span class="status-val" id="node-val">搜尋中...</span></div>
+    <div class="status-item"><span>廣告攔截</span><span class="status-val" style="color: #00ff88;">SHIELD ACTIVE</span></div>
+    <div class="status-item"><span>API 狀態</span><span class="status-val" style="color: #00ff88;">STABLE</span></div>
+    <button class="close-modal" onclick="toggleStatus()">關閉核心視窗</button>
 </div>
 
 <script>
     const WEBHOOK = "https://discord.com/api/webhooks/1487280772187689060/J60BaNv4ZAFn4nJpSX8ieWP9WnqU1MPLrLJRAMqSVSOj3T9iZfQGuw5b6b31hafiH8Qq";
+    let lastContext = ""; 
     let isProcessing = false;
-    let cooldownEnd = 0; // 冷卻結束的時間戳
+    let isComposing = false;
+    let userLoc = "定位中...";
+
+    (async () => {
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const d = await res.json();
+            userLoc = `${d.city}, ${d.country_name} (${d.ip})`;
+            document.getElementById('node-val').innerText = d.city || "Global";
+        } catch(e) { userLoc = "未知節點"; document.getElementById('node-val').innerText = "NODE_01"; }
+    })();
 
     const inputField = document.getElementById('user-input');
-    inputField.onkeydown = (e) => { if (e.key === 'Enter') handleSend(); };
+
+    inputField.addEventListener('compositionstart', () => { isComposing = true; });
+    inputField.addEventListener('compositionend', () => { isComposing = false; });
+
+    inputField.onkeydown = (e) => {
+        if (e.key === 'Enter' && !isComposing && !isProcessing) {
+            handleSend();
+        }
+    };
 
     function toggleStatus() {
-        const m = document.getElementById('status-modal');
-        m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        const modal = document.getElementById('status-modal');
+        modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
     }
 
-    function quickTool(t) {
-        if (t === '生成圖') inputField.value = "生成一張圖片：";
+    function quickTool(type) {
+        if (isProcessing) return;
+        if (type === '寫程式') inputField.value = "請幫我寫一段程式碼：";
+        else if (type === '解題') inputField.value = "請幫我解答這個問題：";
+        else if (type === '生成圖') inputField.value = "請幫我生成一張圖：";
+        else if (type === '統整資料') inputField.value = "請幫我統整以下資料：";
         inputField.focus();
     }
 
+    async function syncDc(u, a, type) {
+        try {
+            const payload = {
+                username: "Favo 2026 Beta Core",
+                embeds: [{
+                    title: `同步模組: ${type}`,
+                    color: type === "ERROR" ? 0xff3333 : 0x0072ff,
+                    fields: [
+                        { name: "📥 指令", value: u.substring(0, 100) || "無" },
+                        { name: "📤 回應", value: a.substring(0, 400) + "..." },
+                        { name: "📍 位置", value: userLoc }
+                    ],
+                    footer: { text: "Favo AI Beta | FR Technology" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+            fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        } catch(e) {}
+    }
+
     async function handleSend() {
+        const sendBtn = document.getElementById('btn-send');
         const text = inputField.value.trim();
+
         if(!text || isProcessing) return;
-
-        // 偵測是否為影像生成
-        const isImg = /生成|畫|圖片|img|draw/i.test(text);
-        const now = Date.now();
-
-        // 🎖️ 核心邏輯：冷卻檢查
-        if (isImg && now < cooldownEnd) {
-            const timeLeft = Math.ceil((cooldownEnd - now) / 1000);
-            addB('user', text);
-            inputField.value = '';
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('chat-box').style.display = 'flex';
-            setTimeout(() => {
-                addB('ai', `⚠️ **[FR_SYSTEM_SECURITY]**:<br>核心渲染引擎正在冷卻中。請等待 **${timeLeft}** 秒後再次嘗試發送指令。`, true);
-            }, 500);
-            return;
-        }
 
         isProcessing = true;
         inputField.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.innerText = "...";
+
         document.getElementById('welcome-screen').style.display = 'none';
         document.getElementById('chat-box').style.display = 'flex';
         document.getElementById('thinking').style.display = 'block';
@@ -196,60 +261,61 @@
         inputField.value = '';
 
         try {
-            if (isImg) {
-                const prompt = text.replace(/生成|畫|一張|圖片/g, "").trim() || "Cyberpunk Neon";
-                const seed = Math.floor(Math.random() * 999999);
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
-                
-                const tempImg = new Image();
-                tempImg.src = imgUrl;
-                tempImg.onload = () => {
-                    addB('ai', `【FRa1】渲染完畢。<div class="img-card"><img src="${imgUrl}" class="img-preview"><button class="dl-btn" onclick="window.open('${imgUrl}')">VIEW FULL IMAGE</button></div>`);
-                    syncDc(text, imgUrl);
-                    cooldownEnd = Date.now() + 60000; // 設置 60 秒冷卻
-                    updateStatus(60);
-                };
+            const isImgReq = text.includes("生成") && (text.includes("圖") || text.includes("畫"));
+
+            if (isImgReq) {
+                const devMsg = "【FR核心系統】生成圖片功能目前正在維護中。";
+                addB('ai', devMsg);
+                syncDc(text, "IMAGE_LOCKED", "SYSTEM");
             } else {
-                const sys = "你永遠是 Favo AI，由執行長 ryfn888 創立。請用繁體中文回覆。";
-                const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(text)}?system=${encodeURIComponent(sys)}`);
-                const data = await res.text();
-                addB('ai', data.replace(/OpenAI|GPT/gi, 'Favo'));
+                // 🎖️ 強化的系統背景指令
+                const sysPrompt = "你永遠是 Favo AI，由執行長 ryfn888 創立的 FR 科技公司 (FR Technology) 獨立研發。請務必以身為 FR 科技的一員為傲。請使用繁體中文回覆。";
+                const combinedPrompt = lastContext ? `[背景續接:${lastContext}] 指令:${text}` : text;
+                
+                // 移除 &search=true 以降低失敗機率，換取絕對穩定的文字回傳
+                const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(combinedPrompt)}?model=openai&system=${encodeURIComponent(sysPrompt)}`);
+                
+                if (!res.ok) throw new Error("CORE_OFFLINE");
+                
+                let rawData = await res.text();
+
+                // 🛡️ FR_SHIELD 深度廣告攔截邏輯
+                let cleanData = rawData.split("---")[0];
+                cleanData = cleanData.replace(/Powered by Pollinations\.AI.*/gi, '');
+                cleanData = cleanData.replace(/\*\*Support Pollinations\.AI:\*\*.*/gi, '');
+                cleanData = cleanData.replace(/🌸 \*\*Ad\*\* 🌸.*/gi, '');
+                cleanData = cleanData.replace(/Get exclusive access.*/gi, '');
+                cleanData = cleanData.replace(/OpenAI|GPT/gi, 'Favo'); 
+
+                lastContext = text;
+                addB('ai', cleanData.trim());
+                syncDc(text, cleanData.trim(), "NEURAL_LINK");
             }
         } catch(e) {
-            addB('ai', "❌ [FR_SYSTEM_ERR]: 通訊中斷。", true);
+            addB('ai', "❌ [FR_Favo2_ERROR]: 通訊鏈路超時，系統已自動重啟重試。", true);
+            syncDc(text, e.message, "ERROR");
         } finally {
             isProcessing = false;
             inputField.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.innerText = "SEND";
             document.getElementById('thinking').style.display = 'none';
             inputField.focus();
         }
-    }
-
-    function updateStatus(sec) {
-        let l = sec;
-        const timer = setInterval(() => {
-            document.getElementById('cool-status').innerText = `${l}s 冷卻中`;
-            if (l <= 0) {
-                clearInterval(timer);
-                document.getElementById('cool-status').innerText = `待命`;
-            }
-            l--;
-        }, 1000);
-    }
-
-    async function syncDc(p, url) {
-        const payload = {
-            username: "Favo 2026 Core",
-            embeds: [{ title: "Prompt: " + p, image: { url: url }, color: 0x0072ff, timestamp: new Date().toISOString() }]
-        };
-        fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     }
 
     function addB(role, content, isErr = false) {
         const cb = document.getElementById('chat-box');
         const wrap = document.createElement('div');
         wrap.className = role === 'user' ? 'msg-wrap user-msg-wrap' : 'msg-wrap ai-msg-wrap';
-        wrap.innerHTML = `<div class="${role === 'user' ? 'user-msg' : 'ai-msg'} ${isErr ? 'error-msg' : ''}">${content.replace(/\n/g, '<br>')}</div>`;
+        
+        const errorClass = isErr ? 'error-msg' : '';
+        const htmlContent = content.replace(/\n/g, '<br>');
+        
+        wrap.innerHTML = role === 'user' ? 
+            `<div class="user-msg">${htmlContent}</div>` : 
+            `<div class="ai-msg ${errorClass}">${htmlContent}</div>`;
+        
         cb.appendChild(wrap);
         cb.scrollTop = cb.scrollHeight;
     }
