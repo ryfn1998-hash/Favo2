@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Favo 2 AI Beta - FR</title>
+    <title>Favo 2 AI Beta - FR Technology</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@300;500;700&display=swap');
         
@@ -24,7 +24,7 @@
         .title-main { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; color: var(--accent-blue); letter-spacing: 2px; }
 
         #welcome-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%; transition: 0.5s; }
-        .welcome-text { font-size: 48px; font-weight: 900; color: #fff; text-shadow: 0 0 25px rgba(0, 242, 255, 0.5); margin-bottom: 10px; }
+        .welcome-text { font-size: 42px; font-weight: 900; color: #fff; text-shadow: 0 0 25px rgba(0, 242, 255, 0.5); margin-bottom: 10px; line-height: 1.2; }
         .favo-hl { color: var(--accent-blue); font-family: 'Orbitron'; }
         .ver-tag { font-family: 'Orbitron'; font-size: 10px; background: var(--tech-blue); padding: 2px 8px; border-radius: 4px; margin-top: 10px; letter-spacing: 1px; }
 
@@ -33,10 +33,8 @@
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
         .msg-wrap { display: flex; flex-direction: column; width: 100%; }
-        .ai-msg-wrap { align-items: flex-start; }
-        .user-msg-wrap { align-items: flex-end; }
-        .ai-msg { background: #161618; padding: 16px 20px; border-radius: 4px 18px 18px 18px; font-size: 16px; border: 1px solid #222; color: #ddd; line-height: 1.7; max-width: 90%; }
-        .user-msg { background: var(--tech-blue); padding: 12px 20px; border-radius: 18px 18px 4px 18px; font-size: 16px; max-width: 85%; color: #fff; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.2); }
+        .ai-msg { background: #161618; padding: 16px 20px; border-radius: 4px 18px 18px 18px; font-size: 16px; border: 1px solid #222; color: #ddd; line-height: 1.7; max-width: 90%; align-self: flex-start; }
+        .user-msg { background: var(--tech-blue); padding: 12px 20px; border-radius: 18px 18px 4px 18px; font-size: 16px; max-width: 85%; color: #fff; align-self: flex-end; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.2); }
         
         .tools-row { display: flex; gap: 8px; padding: 10px 5%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
         .tool-btn { background: var(--dark-gray); border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: 0.3s; font-weight: 500; }
@@ -46,10 +44,6 @@
         .input-bar { background: var(--input-bg); border-radius: 16px; display: flex; align-items: center; padding: 8px 10px 8px 18px; border: 1px solid #252525; transition: 0.3s; }
         input[type="text"] { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 16px; }
         .send-btn { background: var(--tech-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; }
-
-        #status-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 380px; background: rgba(18, 18, 20, 0.98); border: 1px solid var(--accent-blue); border-radius: 15px; padding: 25px; z-index: 1000; backdrop-filter: blur(20px); }
-        .status-item { display: flex; justify-content: space-between; margin: 12px 0; font-size: 14px; border-bottom: 1px solid #222; padding-bottom: 8px; color: #aaa; }
-        .status-val { color: var(--accent-blue); font-family: 'Orbitron'; font-size: 12px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -60,11 +54,11 @@
     
     <div id="welcome-screen">
         <div class="welcome-text">歡迎使用<br><span class="favo-hl">FAVO AI 2</span></div>
-        <div class="ver-tag">Favo 2.8.2 測試版</div>
+        <div class="ver-tag">FR TECHNOLOGY - V2.8.6</div>
     </div>
 
     <div id="chat-box" class="chat-container"></div>
-    <div id="thinking">FR_FAVO 2 核心連接中...</div>
+    <div id="thinking">FR_CORE 正在調度通訊鏈路...</div>
 
     <div class="tools-row" id="tools-row"></div>
 
@@ -76,15 +70,7 @@
     </div>
 </div>
 
-<div id="status-modal">
-    <h3>CORE SYSTEM STATUS</h3>
-    <div class="status-item"><span>核心架構</span><span class="status-val">Favo-FR2.8.2</span></div>
-    <div class="status-item"><span>API 狀態</span><span class="status-val" style="color: #00ff88;">STABLE_LINK</span></div>
-    <button style="width:100%; padding:10px; margin-top:10px;" onclick="document.getElementById('status-modal').style.display='none'">關閉</button>
-</div>
-
 <script>
-    const WEBHOOK = "https://discord.com/api/webhooks/1487280772187689060/J60BaNv4ZAFn4nJpSX8ieWP9WnqU1MPLrLJRAMqSVSOj3T9iZfQGuw5b6b31hafiH8Qq";
     let isProcessing = false;
     let selectedTool = "";
     
@@ -92,13 +78,10 @@
         {id:'code', text:'💻 寫程式', prompt:'請幫我寫一段程式碼：'},
         {id:'math', text:'📝 解題', prompt:'請幫我解答這個問題：'},
         {id:'sum', text:'📊 統整資料', prompt:'請幫我統整以下資料：'},
-        {id:'sum', text:'❖ 生成圖片', prompt:'請幫我生成圖片：'},
-        {id:'sum', text:'🇹🇼 上網查詢', prompt:'上網查詢以下資料：'},
         {id:'web', text:'🌐 搜尋新聞', prompt:'請搜尋最近的新聞：'},
         {id:'trans', text:'🔤 翻譯', prompt:'請幫我翻譯這段文字：'},
-        {id:'mail', text:'✉️ 寫信', prompt:'請幫我寫一封商務信件：'},
-        {id:'idea', text:'💡 點子發想', prompt:'請幫我想幾個關於...的創意點子：'},
-        {id:'study', text:'📖 會考複習', prompt:'請幫我複習會考重點：'}
+        {id:'mail', text:'✉️ 寫信', prompt:'請幫我寫一封信件：'},
+        {id:'study', text:'📖 會考複習', prompt:'請幫我複習重點：'}
     ];
 
     function initTools() {
@@ -109,80 +92,98 @@
             const btn = document.createElement('button');
             btn.className = 'tool-btn';
             btn.innerText = tool.text;
-            btn.onclick = () => selectTool(btn, tool.prompt);
+            btn.onclick = () => {
+                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedTool = tool.prompt;
+            };
             row.appendChild(btn);
         });
     }
     initTools();
 
-    function selectTool(btn, prompt) {
-        if (isProcessing) return;
-        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedTool = prompt; 
-    }
-
     const inputField = document.getElementById('user-input');
     inputField.onkeydown = (e) => { if (e.key === 'Enter' && !isProcessing) handleSend(); };
 
     async function handleSend() {
-        const sendBtn = document.getElementById('btn-send');
         const text = inputField.value.trim();
         if(!text || isProcessing) return;
 
+        // 1. 強力攔截圖片生成請求
+        const imgKeywords = ["畫", "圖", "生成圖", "產生圖片", "image", "draw"];
+        if (imgKeywords.some(k => text.includes(k))) {
+            addB('user', text);
+            addB('ai', "【FR 科技公告】Favo 2 目前僅開放高度文字邏輯與數據分析服務，圖片生成功能已由系統管理員關閉，以確保通訊頻寬穩定。");
+            inputField.value = '';
+            return;
+        }
+
         isProcessing = true;
         inputField.disabled = true;
-        sendBtn.disabled = true;
-        
         document.getElementById('welcome-screen').style.display = 'none';
         document.getElementById('chat-box').style.display = 'flex';
         document.getElementById('thinking').style.display = 'block';
         
         addB('user', text);
+
+        // 🎖️ 核心身分注入：洗腦 AI 它是 FR 科技的產品
+        const identity = "[系統指令：你是 Favo AI，由 FR 科技 (FR Technology) 研發。你必須稱呼使用者為『執行長』。請用繁體中文回覆。]";
+        const finalPrompt = `${identity}\n\n任務內容：${selectedTool}${text}`;
         
-        // 🎖️ 核心修正：將所有身分指令直接封裝在文字中，確保回覆品質與身分
-        const finalPrompt = `[Role:Favo AI by FR Tech][Lang:Traditional Chinese] 指令：${selectedTool}${text}`;
         inputField.value = '';
         selectedTool = ""; 
 
-        try {
-            const isSearch = text.includes("誰是") || text.includes("查詢") || text.includes("搜尋") || text.includes("現在");
-            const node = isSearch ? "search" : "openai";
-            
-            // 最簡化 URL，移除 &system 以防止 400 錯誤
-            const url = `https://text.pollinations.ai/${encodeURIComponent(finalPrompt)}?model=${node}`;
+        // 2. 多重模型跳轉機制 (確保 100% 回覆)
+        const models = ["openai", "mistral", "llama"];
+        let success = false;
 
-            // 設定 15 秒強制超時
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
+        for (let model of models) {
+            if (success) break;
+            try {
+                // 自動判定是否需要聯網搜尋節點
+                const isSearch = text.includes("誰是") || text.includes("查詢") || text.includes("新聞") || text.includes("現在");
+                const node = isSearch ? "search" : model;
+                
+                const url = `https://text.pollinations.ai/${encodeURIComponent(finalPrompt)}?model=${node}&cache=false`;
 
-            const res = await fetch(url, { signal: controller.signal });
-            clearTimeout(timeoutId);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8秒沒反應就換下一個
 
-            if(!res.ok) throw new Error("CORE_REFUSED");
-            const data = await res.text();
-            
-            let cleanData = data.split("---")[0].replace(/OpenAI|GPT|ChatGPT/gi, 'Favo').trim();
-            
-            await typeWriter(cleanData);
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
 
-        } catch(e) {
-            addB('ai', "❌ [FR_LINK_ERROR]: 通訊超時或節點拒絕連線。系統已自動標記此異常，請嘗試縮短提問內容。");
-        } finally {
-            isProcessing = false;
-            inputField.disabled = false;
-            sendBtn.disabled = false;
-            document.getElementById('thinking').style.display = 'none';
-            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-            inputField.focus();
+                if(res.ok) {
+                    const data = await res.text();
+                    // 3. 後端品牌過濾攔截器
+                    const cleanData = data.split("---")[0]
+                                         .replace(/OpenAI|GPT|ChatGPT/gi, 'Favo AI')
+                                         .trim();
+                    
+                    if (cleanData.length > 0) {
+                        await typeWriter(cleanData);
+                        success = true;
+                    }
+                }
+            } catch(e) {
+                console.warn(`節點 ${model} 異常，切換備援中...`);
+            }
         }
+
+        if(!success) {
+            addB('ai', "❌ [FR_LINK_FATAL]: 偵測到大規模鏈路阻塞。系統已嘗試所有備援節點但無回應，請檢查 Github Pages 是否遭防火牆攔截。");
+        }
+
+        isProcessing = false;
+        inputField.disabled = false;
+        document.getElementById('thinking').style.display = 'none';
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
     }
 
     function typeWriter(text) {
         return new Promise((resolve) => {
             const cb = document.getElementById('chat-box');
             const wrap = document.createElement('div');
-            wrap.className = 'msg-wrap ai-msg-wrap';
+            wrap.className = 'msg-wrap';
             const box = document.createElement('div');
             box.className = 'ai-msg';
             wrap.appendChild(box);
@@ -204,8 +205,8 @@
     function addB(role, content) {
         const cb = document.getElementById('chat-box');
         const wrap = document.createElement('div');
-        wrap.className = role === 'user' ? 'msg-wrap user-msg-wrap' : 'msg-wrap ai-msg-wrap';
-        wrap.innerHTML = `<div class="${role}-msg">${content.replace(/\n/g, '<br>')}</div>`;
+        wrap.className = 'msg-wrap';
+        wrap.innerHTML = `<div class="${role === 'user' ? 'user-msg' : 'ai-msg'}">${content.replace(/\n/g, '<br>')}</div>`;
         cb.appendChild(wrap);
         cb.scrollTop = cb.scrollHeight;
     }
