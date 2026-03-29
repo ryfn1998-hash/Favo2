@@ -60,7 +60,7 @@
     
     <div id="welcome-screen">
         <div class="welcome-text">歡迎使用<br><span class="favo-hl">FAVO AI 2</span></div>
-        <div class="ver-tag">Favo 2.8 高速版</div>
+        <div class="ver-tag">Favo 2.8.2 測試版</div>
     </div>
 
     <div id="chat-box" class="chat-container"></div>
@@ -78,8 +78,8 @@
 
 <div id="status-modal">
     <h3>CORE SYSTEM STATUS</h3>
-    <div class="status-item"><span>核心架構</span><span class="status-val">Favo-FR2.8</span></div>
-    <div class="status-item"><span>API 狀態</span><span class="status-val" style="color: #00ff88;">OPTIMIZED</span></div>
+    <div class="status-item"><span>核心架構</span><span class="status-val">Favo-FR2.8.2</span></div>
+    <div class="status-item"><span>API 狀態</span><span class="status-val" style="color: #00ff88;">STABLE_LINK</span></div>
     <button style="width:100%; padding:10px; margin-top:10px;" onclick="document.getElementById('status-modal').style.display='none'">關閉</button>
 </div>
 
@@ -88,19 +88,19 @@
     let isProcessing = false;
     let selectedTool = "";
     
-    // 指令庫
     const toolPool = [
         {id:'code', text:'💻 寫程式', prompt:'請幫我寫一段程式碼：'},
         {id:'math', text:'📝 解題', prompt:'請幫我解答這個問題：'},
         {id:'sum', text:'📊 統整資料', prompt:'請幫我統整以下資料：'},
+        {id:'sum', text:'❖ 生成圖片', prompt:'請幫我生成圖片：'},
+        {id:'sum', text:'🇹🇼 上網查詢', prompt:'上網查詢以下資料：'},
         {id:'web', text:'🌐 搜尋新聞', prompt:'請搜尋最近的新聞：'},
         {id:'trans', text:'🔤 翻譯', prompt:'請幫我翻譯這段文字：'},
         {id:'mail', text:'✉️ 寫信', prompt:'請幫我寫一封商務信件：'},
-        {id:'idea', text:'💡 點子發想', prompt:'請幫我想 5 個關於...的創意點子：'},
-        {id:'study', text:'📖 會考複習', prompt:'請幫我複習會考歷史重點：'}
+        {id:'idea', text:'💡 點子發想', prompt:'請幫我想幾個關於...的創意點子：'},
+        {id:'study', text:'📖 會考複習', prompt:'請幫我複習會考重點：'}
     ];
 
-    // 初始化隨機 5 個按鈕
     function initTools() {
         const row = document.getElementById('tools-row');
         const shuffled = toolPool.sort(() => 0.5 - Math.random()).slice(0, 5);
@@ -119,7 +119,7 @@
         if (isProcessing) return;
         document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        selectedTool = prompt; // 僅後台記錄，不填入輸入框
+        selectedTool = prompt; 
     }
 
     const inputField = document.getElementById('user-input');
@@ -139,39 +139,45 @@
         document.getElementById('thinking').style.display = 'block';
         
         addB('user', text);
-        const fullUserQuery = selectedTool + text;
+        
+        // 🎖️ 核心修正：將所有身分指令直接封裝在文字中，確保回覆品質與身分
+        const finalPrompt = `[Role:Favo AI by FR Tech][Lang:Traditional Chinese] 指令：${selectedTool}${text}`;
         inputField.value = '';
-        selectedTool = ""; // 重置
+        selectedTool = ""; 
 
         try {
-            // 🔍 智慧判定：是否需要上網搜尋
-            const needsWeb = text.includes("誰是") || text.includes("現在") || text.includes("搜尋") || text.includes("推薦");
-            const modelNode = needsWeb ? "search" : "openai";
+            const isSearch = text.includes("誰是") || text.includes("查詢") || text.includes("搜尋") || text.includes("現在");
+            const node = isSearch ? "search" : "openai";
             
-            const sys = encodeURIComponent("你是 Favo AI，由 FR 科技研發。請用繁體中文回覆。");
-            const url = `https://text.pollinations.ai/${encodeURIComponent(fullUserQuery)}?model=${modelNode}&system=${sys}`;
+            // 最簡化 URL，移除 &system 以防止 400 錯誤
+            const url = `https://text.pollinations.ai/${encodeURIComponent(finalPrompt)}?model=${node}`;
 
-            const res = await fetch(url);
-            if(!res.ok) throw new Error("API_FAIL");
+            // 設定 15 秒強制超時
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+            const res = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if(!res.ok) throw new Error("CORE_REFUSED");
             const data = await res.text();
             
             let cleanData = data.split("---")[0].replace(/OpenAI|GPT|ChatGPT/gi, 'Favo').trim();
             
-            // 🖊️ 啟動打字機效果
             await typeWriter(cleanData);
 
         } catch(e) {
-            addB('ai', "❌ [FR核心錯誤]: 通訊超時，請檢查網路環境或簡化問題。");
+            addB('ai', "❌ [FR_LINK_ERROR]: 通訊超時或節點拒絕連線。系統已自動標記此異常，請嘗試縮短提問內容。");
         } finally {
             isProcessing = false;
             inputField.disabled = false;
             sendBtn.disabled = false;
             document.getElementById('thinking').style.display = 'none';
             document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            inputField.focus();
         }
     }
 
-    // 打字機效果函數
     function typeWriter(text) {
         return new Promise((resolve) => {
             const cb = document.getElementById('chat-box');
@@ -188,10 +194,8 @@
                     box.innerHTML = text.substring(0, i + 1).replace(/\n/g, '<br>');
                     i++;
                     cb.scrollTop = cb.scrollHeight;
-                    setTimeout(type, 15); // 控制打字速度
-                } else {
-                    resolve();
-                }
+                    setTimeout(type, 15);
+                } else { resolve(); }
             }
             type();
         });
